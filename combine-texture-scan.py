@@ -20,12 +20,20 @@ parser.add_argument('-d', metavar='folder', type=str, nargs='+',
 parser.add_argument('-o', metavar='output filename', type=str, nargs='+',
                     help='name of the output file.', default="output.csv")
 
+parser.add_argument('-p', metavar='plot3D', type=bool, nargs='+',
+                    help='If true then an interactive 3D plot in matplotlib will be shown', default=True)
+
 args = parser.parse_args()
 print(args)
 path=args.d[0]
 
 print(path)
 files=glob.glob(path+"/*.x00")
+
+if len(files) == 0:
+    print("No .xnn files in the specified directory or the directory does not exist")
+    exit(1)
+    pass
 
 psi_list = []
 
@@ -62,7 +70,7 @@ for filename in files:
 
 df2 = pd.DataFrame()
 psi_list.sort()
-phi=np.arange(FirstAngle, ScanRange, StepWidth)
+phi=np.arange(FirstAngle, ScanRange+StepWidth, StepWidth)
 # print(phi.shape)
 # print(len(psi_list))
 zeros = [0]*(phi.shape[0]-len(psi_list))
@@ -76,3 +84,29 @@ for psi in psi_list:
 
 print("output file name ", path + "/" + args.o[0])
 df2.to_csv(path + "/" + args.o[0])
+
+# Plot 3D 
+if args.p:
+    from mpl_toolkits import mplot3d
+    import numpy as np
+    import matplotlib.pyplot as plt
+    fig = plt.figure()
+    
+    ax = plt.axes(projection='3d')
+
+
+    # Data for a three-dimensional line
+    z = df.to_numpy()
+    x = phi
+    y = np.array(psi_list)
+    X, Y = np.meshgrid(y, x)
+    # print(x.shape)
+    # print(y.shape)
+    # print(z.shape)
+    ax.plot_surface(X, Y, z, cmap='viridis', edgecolor='green')
+    ax.set_xlabel('psi', fontsize=12)
+    ax.set_ylabel('phi', fontsize=12)
+    ax.set_zlabel('I(cps)', fontsize=12)
+    plt.show()
+
+    pass
