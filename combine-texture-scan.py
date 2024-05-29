@@ -70,7 +70,7 @@ for filename in files:
     df[psi]=intensities
     pass
 df = df.reindex(sorted(df.columns), axis=1)
-print(df)
+# print(df)
 
 df2 = pd.DataFrame()
 psi_list.sort()
@@ -121,16 +121,16 @@ if args.p[0] == 0:
     x = phi
     y = np.array(psi_list)
     X, Y = np.meshgrid(x, y)
-    print(X[:,0])
-    print(X[:,1])
+    # print(X[:,0])
+    # print(X[:,1])
 
-    print(Y[:,0])
-    print(Y[:,1])
+    # print(Y[:,0])
+    # print(Y[:,1])
     # print(x.shape)
     # print(y.shape)
-    print(X.shape)
-    print(Y.shape)
-    print(z.shape)
+    # print(X.shape)
+    # print(Y.shape)
+    # print(z.shape)
     
     
     ax.plot_surface(Y, X, z, cmap='viridis', edgecolor='green', rstride=1, cstride=1)
