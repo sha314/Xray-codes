@@ -15,10 +15,10 @@ parser = argparse.ArgumentParser(
 
 
 parser.add_argument('-d', metavar='folder', type=str, nargs='+',
-                    help='Locationo of the folder containing .xnn files. Use double coute "" to ensure the name is passed properly')
+                    help='Location of the folder containing .xnn files or plain text files. Use double coute "" to ensure the name is passed properly')
 
 parser.add_argument('-o', metavar='output filename', type=str, nargs='+',
-                    help='name of the output file.', default="output.csv")
+                    help='name of the output file.', default=["output.csv"])
 
 parser.add_argument('-p', metavar='plot3D', type=int, nargs='+',
                     help='If 0 then an interactive 3D plot in matplotlib will be shown. If 1 then a heatmap.', default=[0])
