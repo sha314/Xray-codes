@@ -23,6 +23,9 @@ parser.add_argument('-o', metavar='output filename', type=str, nargs='+',
 parser.add_argument('-p', metavar='plot3D', type=bool, nargs='+',
                     help='If true then an interactive 3D plot in matplotlib will be shown', default=True)
 
+parser.add_argument('-m', metavar='min_count', type=float, nargs='+',
+                    help='Minimum counts in the scan', default=10)
+
 args = parser.parse_args()
 print(args)
 path=args.d[0]
@@ -79,13 +82,27 @@ df2["phi"]=phi
 
 for psi in psi_list:
     # print(psi)
-    df2[psi] = df[psi]
+    df2[psi] = df[psi] 
     pass
 
 print("output file name ", path + "/" + args.o[0])
 df2.to_csv(path + "/" + args.o[0])
 
-# Plot 3D 
+# Display peaks in terminal
+
+min_count = args.m
+df3 = df[df > min_count].fillna(0)
+# print(df3)
+df3 = df3.loc[:, (df3 != 0).any(axis=0)]
+# print(df3)
+df3 = df3.loc[(df3 != 0).any(axis=1),:]
+phis = df2['phi'].iloc[df3.index.values]
+df3["phi"] = phis
+# print(df3.append(phis))
+print(df3)
+
+
+# Plot 3D surface plot
 if args.p:
     from mpl_toolkits import mplot3d
     import numpy as np
@@ -103,7 +120,7 @@ if args.p:
     # print(x.shape)
     # print(y.shape)
     # print(z.shape)
-    ax.plot_surface(X, Y, z, cmap='viridis', edgecolor='green')
+    ax.plot_surface(X, Y, z, cmap='viridis', edgecolor='green', rstride=1, cstride=1)
     ax.set_xlabel('psi', fontsize=12)
     ax.set_ylabel('phi', fontsize=12)
     ax.set_zlabel('I(cps)', fontsize=12)
