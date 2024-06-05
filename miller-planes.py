@@ -92,6 +92,12 @@ def draw_unit_cell_v2(a,b,c,alpha,beta,gamma):
     ax.set_ylabel('y', fontsize=12)
     ax.set_zlabel('z', fontsize=12)
 
+    lim = [a,b,c]
+    lim.sort()
+    m=lim[-1]
+    ax.set_xlim([0, m])
+    ax.set_ylim([0, m])
+    ax.set_zlim([0, m])
     pass
 
 
@@ -267,5 +273,5 @@ def draw_unit_cube(cube_arm = 10):
 
 
 # draw_unit_cell(5,6,7,np.radians(90),np.radians(90),np.radians(45))
-draw_unit_cell_v2(5,5,10,np.radians(90),np.radians(90),np.radians(120))
+draw_unit_cell_v2(3,6,9,np.radians(90),np.radians(90),np.radians(90))
 plt.show()
