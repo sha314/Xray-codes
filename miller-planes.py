@@ -33,6 +33,16 @@ def draw_unit_cell_v2(a,b,c,alpha,beta,gamma):
     VV = (a + b*np.cos(gamma), b*np.sin(gamma), c)
     UU = (a + c*np.cos(beta), 0, c*np.sin(beta))
 
+    ax.scatter(OO[0],OO[1],OO[2], label="O")
+    ax.scatter(PP[0],PP[1],PP[2], label="P")
+    ax.scatter(TT[0],TT[1],TT[2], label="T")
+    ax.scatter(SS[0],SS[1],SS[2], label="S")
+    ax.scatter(RR[0],RR[1],RR[2], label="R")
+    ax.scatter(UU[0],UU[1],UU[2], label="U")
+    ax.scatter(VV[0],VV[1],VV[2], label="V")
+    ax.scatter(QQ[0],QQ[1],QQ[2], label="Q")
+
+
     # xy plane ORST -> arms OR, RS, ST, TO
     
     arr = np.array([[OO, RR],
@@ -98,6 +108,8 @@ def draw_unit_cell_v2(a,b,c,alpha,beta,gamma):
     ax.set_xlim([0, m])
     ax.set_ylim([0, m])
     ax.set_zlim([0, m])
+
+    
     pass
 
 
@@ -273,5 +285,6 @@ def draw_unit_cube(cube_arm = 10):
 
 
 # draw_unit_cell(5,6,7,np.radians(90),np.radians(90),np.radians(45))
-draw_unit_cell_v2(3,6,9,np.radians(90),np.radians(90),np.radians(90))
+draw_unit_cell_v2(4,9,4,np.radians(90),np.radians(120),np.radians(90))
+plt.legend()
 plt.show()
