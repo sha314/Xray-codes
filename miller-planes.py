@@ -26,9 +26,9 @@ def draw_unit_cell_v2(a,b,c,alpha,beta,gamma):
     SS = (a + b * np.cos(gamma), b*np.sin(gamma), 0)
     RR = (b*np.cos(gamma), b*np.sin(gamma), 0)
     PP = (c*np.cos(beta), c*np.cos(alpha), c*np.sin(beta)* np.sin(alpha))
-    QQ = (b*np.cos(gamma)+c*np.cos(beta), b*np.sin(gamma) + c*np.cos(alpha), c*np.sin(beta))
-    VV = (a + b*np.cos(gamma) + c*np.cos(beta), b*np.sin(gamma) + c*np.cos(alpha), c*np.sin(beta))
-    UU = (a + c*np.cos(beta), + c*np.cos(alpha), c*np.sin(beta))
+    QQ = (b*np.cos(gamma)+c*np.cos(beta), b*np.sin(gamma) + c*np.cos(alpha), c*np.sin(beta)* np.sin(alpha))
+    VV = (a + b*np.cos(gamma) + c*np.cos(beta), b*np.sin(gamma) + c*np.cos(alpha), c*np.sin(beta)* np.sin(alpha))
+    UU = (a + c*np.cos(beta), + c*np.cos(alpha), c*np.sin(beta)* np.sin(alpha))
 
     ax.scatter(OO[0],OO[1],OO[2], lw=4, label="O")
     ax.scatter(PP[0],PP[1],PP[2], lw=4, label="P")
