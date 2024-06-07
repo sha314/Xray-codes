@@ -50,7 +50,7 @@ def draw_unit_cell_v2(a,b,c,alpha,beta,gamma):
     X = arr[:,:,0]
     Y = arr[:,:,1]
     Z = arr[:,:,2]
-    ax.plot_surface(Y, X, Z,  edgecolor='green', rstride=1, cstride=1, alpha=0.5)
+    ax.plot_surface(X, Y, Z,  edgecolor='green', rstride=1, cstride=1, alpha=0.5)
 
     # xy plane PQVU
 
@@ -59,7 +59,7 @@ def draw_unit_cell_v2(a,b,c,alpha,beta,gamma):
     X = arr[:,:,0]
     Y = arr[:,:,1]
     Z = arr[:,:,2]
-    ax.plot_surface(Y, X, Z,  edgecolor='green', rstride=1, cstride=1, alpha=0.5)
+    ax.plot_surface(X, Y, Z,  edgecolor='green', rstride=1, cstride=1, alpha=0.5)
 
 
     # yz plane, OPQR
@@ -68,7 +68,7 @@ def draw_unit_cell_v2(a,b,c,alpha,beta,gamma):
     X = arr[:,:,0]
     Y = arr[:,:,1]
     Z = arr[:,:,2]
-    ax.plot_surface(Y, X, Z,  edgecolor='green', rstride=1, cstride=1, alpha=0.5)
+    ax.plot_surface(X, Y, Z,  edgecolor='green', rstride=1, cstride=1, alpha=0.5)
 
 
     # yz plane, TSVU
@@ -78,7 +78,7 @@ def draw_unit_cell_v2(a,b,c,alpha,beta,gamma):
     X = arr[:,:,0]
     Y = arr[:,:,1]
     Z = arr[:,:,2]
-    ax.plot_surface(Y, X, Z,  edgecolor='green', rstride=1, cstride=1, alpha=0.5)
+    ax.plot_surface(X, Y, Z,  edgecolor='green', rstride=1, cstride=1, alpha=0.5)
 
 
 
@@ -88,7 +88,7 @@ def draw_unit_cell_v2(a,b,c,alpha,beta,gamma):
     X = arr[:,:,0]
     Y = arr[:,:,1]
     Z = arr[:,:,2]
-    ax.plot_surface(Y, X, Z,  edgecolor='green', rstride=1, cstride=1, alpha=0.5)
+    ax.plot_surface(X, Y, Z,  edgecolor='green', rstride=1, cstride=1, alpha=0.5)
 
     # zx plane, RSVQ
     arr = np.array([[RR, SS],
@@ -96,7 +96,7 @@ def draw_unit_cell_v2(a,b,c,alpha,beta,gamma):
     X = arr[:,:,0]
     Y = arr[:,:,1]
     Z = arr[:,:,2]
-    ax.plot_surface(Y, X, Z,  edgecolor='green', rstride=1, cstride=1, alpha=0.5)
+    ax.plot_surface(X, Y, Z,  edgecolor='green', rstride=1, cstride=1, alpha=0.5)
 
     ax.set_xlabel('x', fontsize=12)
     ax.set_ylabel('y', fontsize=12)
@@ -285,6 +285,7 @@ def draw_unit_cube(cube_arm = 10):
 
 
 # draw_unit_cell(5,6,7,np.radians(90),np.radians(90),np.radians(45))
-draw_unit_cell_v2(4,9,4,np.radians(90),np.radians(120),np.radians(90))
+draw_unit_cell_v2(4,4,9,np.radians(90),np.radians(90),np.radians(120))
+# draw_unit_cell_v2(4,9,4,np.radians(90),np.radians(120),np.radians(90))
 plt.legend()
 plt.show()
