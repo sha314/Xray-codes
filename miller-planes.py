@@ -27,7 +27,7 @@ def draw_unit_cell_v2(a,b,c,alpha,beta,gamma):
     RR = (b*np.cos(gamma), b*np.sin(gamma), 0)
     PP = (c*np.cos(beta), c*np.cos(alpha), c*np.sin(beta)* np.sin(alpha))
     QQ = (b*np.cos(gamma)+c*np.cos(beta), b*np.sin(gamma) + c*np.cos(alpha), c*np.sin(alpha))
-    VV = (a + b*np.cos(gamma), b*np.sin(gamma) + c*np.cos(alpha), c*np.sin(beta))
+    VV = (a + b*np.cos(gamma) + c*np.cos(beta), b*np.sin(gamma) + c*np.cos(alpha), c*np.sin(beta))
     UU = (a + c*np.cos(beta), + c*np.cos(alpha), c*np.sin(beta))
 
     ax.scatter(OO[0],OO[1],OO[2], lw=4, label="O")
@@ -293,5 +293,12 @@ plt.show()
 fig = plt.figure()
 ax = plt.axes(projection='3d')
 draw_unit_cell_v2(4,9,4,np.radians(90),np.radians(120),np.radians(90))
+plt.legend()
+plt.show()
+
+
+fig = plt.figure()
+ax = plt.axes(projection='3d')
+draw_unit_cell_v2(9,4,4,np.radians(120),np.radians(90),np.radians(90))
 plt.legend()
 plt.show()
