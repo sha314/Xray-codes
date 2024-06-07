@@ -26,7 +26,7 @@ def draw_unit_cell_v2(a,b,c,alpha,beta,gamma):
     SS = (a + b * np.cos(gamma), b*np.sin(gamma), 0)
     RR = (b*np.cos(gamma), b*np.sin(gamma), 0)
     PP = (c*np.cos(beta), c*np.cos(alpha), c*np.sin(beta)* np.sin(alpha))
-    QQ = (b*np.cos(gamma)+c*np.cos(beta), b*np.sin(gamma) + c*np.cos(alpha), c*np.sin(alpha))
+    QQ = (b*np.cos(gamma)+c*np.cos(beta), b*np.sin(gamma) + c*np.cos(alpha), c*np.sin(beta))
     VV = (a + b*np.cos(gamma) + c*np.cos(beta), b*np.sin(gamma) + c*np.cos(alpha), c*np.sin(beta))
     UU = (a + c*np.cos(beta), + c*np.cos(alpha), c*np.sin(beta))
 
