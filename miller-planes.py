@@ -44,8 +44,9 @@ class UnitCell:
         self.draw_points(ax)
         self.draw_unit_cell(ax)
         # A,B,C,D = self.find_plane((1,0,0))
-        # OO, PP, QQ, RR, SS, TT, UU, VV = self.points
-        # self.draw_plane_from_4_points(ax, PP, QQ, SS, TT)
+        OO, PP, QQ, RR, SS, TT, UU, VV = self.points
+        # self.draw_plane_from_4_points(ax, PP, QQ, SS, TT, opacity=0.8)
+        self.draw_plane_from_3_points(ax, PP, TT, RR, opacity=0.8)
         plt.legend()
         plt.show()
         pass
@@ -92,7 +93,7 @@ class UnitCell:
         ax.set_zlim([0, m])
         pass
 
-    def draw_plane_from_4_points(self, ax, A, B, C, D, opacity=0.5):
+    def draw_plane_from_4_points(self, ax, A, B, C, D, opacity=0.3):
         """
         ABCD rectangle. Four arms are AB, BC, CD, DA
         """
@@ -103,6 +104,13 @@ class UnitCell:
         Z = arr[:,:,2]
         ax.plot_surface(X, Y, Z,  edgecolor='green', rstride=1, cstride=1, alpha=opacity)
 
+        pass
+
+    def draw_plane_from_3_points(self, ax, A, B, C, opacity=0.3):
+        """
+        ABCD rectangle. Four arms are AB, BC, CD, DA
+        """
+        self.draw_plane_from_4_points(ax, A, B, C, C, opacity)
         pass
 
 
