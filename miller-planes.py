@@ -81,18 +81,14 @@ class UnitCell:
         numbers = [self.points_dict[k] for k in label]
         return numbers
     
-    def draw_plane_calculate_angle(self, plane1, plane2=None):
+    def draw_plane_calculate_angle(self, miller1, miller2=(0,0,1)):
         """
         calculates angle between two planes.
 
-        plane2 : default None. In that case, xy plane is used with miller index (0,0,1)
+        miller2 : default is xy plane, with miller index (0,0,1)
         """
-        corners1 = self.get_planes_from_miller_index(plane1)
-        if plane2 is None:
-            corners2 = self.get_planes_from_miller_index((0,0,1))
-        else:
-            corners2 = self.get_planes_from_miller_index(plane2)
-            pass
+        corners1 = self.get_planes_from_miller_index(miller1)
+        corners2 = self.get_planes_from_miller_index(miller2)
         # print("points1 ", corners1)
         # print("points2 ", corners2)
         self.find_angle_between_planes(corners1, corners2)
