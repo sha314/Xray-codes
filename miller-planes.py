@@ -37,7 +37,7 @@ class UnitCell:
         self.points_dict = {'O':OO, 'P':PP, 'Q':QQ, 'R':RR, 'S':SS, 'T':TT, 'U':UU, 'V':VV}
         self.points_label="OPQRSTUV"
         pass
-    
+
     def get_planes(self, miller_index=(1,1,1)):
         """
         miller_index : as an array with 3 integer numbers, positive or negative
@@ -73,13 +73,14 @@ class UnitCell:
     def draw(self):
         fig = plt.figure()
         ax = plt.axes(projection='3d')
+        self.ax = ax
         
-        self.draw_points(ax)
-        self.draw_unit_cell(ax)
+        self.draw_points()
+        self.draw_unit_cell()
         # A,B,C,D = self.find_plane((1,0,0))
         OO, PP, QQ, RR, SS, TT, UU, VV = self.points
         # self.draw_plane_from_4_points(ax, PP, QQ, SS, TT, opacity=0.8)
-        self.draw_plane_from_3_points(ax, PP, TT, RR, opacity=0.8)
+        self.draw_plane_from_3_points(PP, TT, RR, opacity=0.8)
         self.find_normal_vector(UU, VV, SS, TT)
         self.find_normal_vector(OO, TT, SS, RR)
         self.find_normal_vector(PP, UU, VV, QQ)
@@ -93,7 +94,8 @@ class UnitCell:
         pass
 
 
-    def draw_points(self, ax):
+    def draw_points(self):
+        ax = self.ax
         OO, PP, QQ, RR, SS, TT, UU, VV = self.points
         ax.scatter(OO[0],OO[1],OO[2], lw=4, label="O")
         ax.scatter(PP[0],PP[1],PP[2], lw=4, label="P")
@@ -106,21 +108,22 @@ class UnitCell:
 
         pass
         
-    def draw_unit_cell(self, ax):
+    def draw_unit_cell(self):
+        ax = self.ax
         OO, PP, QQ, RR, SS, TT, UU, VV = self.points
 
         # xy plane ORST -> arms OR, RS, ST, TO
-        self.draw_plane_from_4_points(ax, OO, RR, SS, TT)
+        self.draw_plane_from_4_points(OO, RR, SS, TT)
         # xy plane PQVU
-        self.draw_plane_from_4_points(ax, PP, QQ, VV, UU)
+        self.draw_plane_from_4_points(PP, QQ, VV, UU)
         # yz plane, OPQR
-        self.draw_plane_from_4_points(ax, OO, PP, QQ, RR)
+        self.draw_plane_from_4_points(OO, PP, QQ, RR)
         # yz plane, TSVU
-        self.draw_plane_from_4_points(ax, TT, SS, VV, UU)
+        self.draw_plane_from_4_points(TT, SS, VV, UU)
         # zx plane, OPUT
-        self.draw_plane_from_4_points(ax, OO, PP, UU, TT)
+        self.draw_plane_from_4_points(OO, PP, UU, TT)
         # zx plane, RSVQ
-        self.draw_plane_from_4_points(ax, RR, SS, VV, QQ)
+        self.draw_plane_from_4_points(RR, SS, VV, QQ)
 
         ax.set_xlabel('x', fontsize=12)
         ax.set_ylabel('y', fontsize=12)
@@ -134,10 +137,11 @@ class UnitCell:
         ax.set_zlim([0, m])
         pass
 
-    def draw_plane_from_4_points(self, ax, A, B, C, D, opacity=0.3):
+    def draw_plane_from_4_points(self, A, B, C, D, opacity=0.3):
         """
         ABCD rectangle. Four arms are AB, BC, CD, DA
         """
+        ax = self.ax
         arr = np.array([[A, B],
                         [D, C]])
         X = arr[:,:,0]
@@ -147,11 +151,11 @@ class UnitCell:
 
         pass
 
-    def draw_plane_from_3_points(self, ax, A, B, C, opacity=0.3):
+    def draw_plane_from_3_points(self, A, B, C, opacity=0.3):
         """
         ABC Triangle. Three arms are AB, BC, CA
         """
-        self.draw_plane_from_4_points(ax, A, B, C, C, opacity)
+        self.draw_plane_from_4_points(A, B, C, C, opacity)
         pass
     
     def find_angle_between_planes(self, plane1, plane2):
@@ -207,19 +211,19 @@ class UnitCell:
 
 
 cell1 = UnitCell(4,4,4,np.radians(90),np.radians(90),np.radians(90))
-# cell1.draw()
+cell1.draw()
 # cell1.find_plane((0,0,1))
 cell1.get_planes((1,0,1))
 cell1.get_planes((1,1,0))
 cell1.get_planes((0,1,1))
 cell1.get_planes((1,1,1))
 
-# cell1 = UnitCell(4,4,9,np.radians(90),np.radians(90),np.radians(120))
-# cell1.draw()
+cell1 = UnitCell(4,4,9,np.radians(90),np.radians(90),np.radians(120))
+cell1.draw()
 
-# cell1 = UnitCell(4,9,4,np.radians(90),np.radians(120),np.radians(90))
-# cell1.draw()
+cell1 = UnitCell(4,9,4,np.radians(90),np.radians(120),np.radians(90))
+cell1.draw()
 
-# cell1 = UnitCell(9,4,4,np.radians(120),np.radians(90),np.radians(90))
-# cell1.draw()
+cell1 = UnitCell(9,4,4,np.radians(120),np.radians(90),np.radians(90))
+cell1.draw()
 
