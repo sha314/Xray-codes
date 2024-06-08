@@ -34,9 +34,42 @@ class UnitCell:
         UU = (a + c*np.cos(beta), + c*np.cos(alpha), c*np.sin(beta)* np.sin(alpha))
 
         self.points = [OO, PP, QQ, RR, SS, TT, UU, VV]
+        self.points_dict = {'O':OO, 'P':PP, 'Q':QQ, 'R':RR, 'S':SS, 'T':TT, 'U':UU, 'V':VV}
         self.points_label="OPQRSTUV"
         pass
     
+    def get_planes(self, miller_index=(1,1,1)):
+        """
+        miller_index : as an array with 3 integer numbers, positive or negative
+
+        100 or yz plane -> TUVS
+        010 or zx plane -> RSVQ
+        001 or xy plane -> PQVU
+        """
+        self.planes = {'100': 'TUVS', '010': 'RSVQ', '001': 'PQVU'}
+        fullstr = ""
+        if miller_index[0] > 0:
+            fullstr += self.planes['100']
+            pass
+        if miller_index[1] > 0:
+            fullstr += self.planes['010']
+            pass
+        if miller_index[2] > 0:
+            fullstr += self.planes['001']
+            pass
+        countdict = {}
+        for c in fullstr:
+            if c in countdict.keys():
+                countdict[c] += 1
+                pass
+            else:
+                countdict[c] = 1
+                pass
+        finalstr = [c for c in countdict.keys() if countdict[c]==1 ]
+        print(finalstr)
+        return finalstr
+        pass
+
     def draw(self):
         fig = plt.figure()
         ax = plt.axes(projection='3d')
@@ -161,12 +194,25 @@ class UnitCell:
         print("normal ", normal)
         return normal
 
-    
+    def find_loop(self, points):
+        """
+        3 or 4 points will be given, it will order them in a way that makes a loop.
+          each step in the loop will represent an arm of the polygon.
+        """
+        AA, BB, CC, DD = points
+
+        
+
+        pass
 
 
 cell1 = UnitCell(4,4,4,np.radians(90),np.radians(90),np.radians(90))
-cell1.draw()
+# cell1.draw()
 # cell1.find_plane((0,0,1))
+cell1.get_planes((1,0,1))
+cell1.get_planes((1,1,0))
+cell1.get_planes((0,1,1))
+cell1.get_planes((1,1,1))
 
 # cell1 = UnitCell(4,4,9,np.radians(90),np.radians(90),np.radians(120))
 # cell1.draw()
