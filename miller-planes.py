@@ -51,6 +51,10 @@ class UnitCell:
         self.find_normal_vector(OO, TT, SS, RR)
         self.find_normal_vector(PP, UU, VV, QQ)
         self.find_normal_vector(PP, TT, RR, RR)
+        self.find_angle_between_planes((OO, PP, QQ, RR), (PP, RR, TT, PP))
+        self.find_angle_between_planes((OO, PP, QQ, RR), (PP, QQ, SS, TT))
+        self.find_angle_between_planes((OO, PP, QQ, RR), (PP, QQ, TT, SS))
+
         plt.legend()
         plt.show()
         pass
@@ -116,6 +120,15 @@ class UnitCell:
         """
         self.draw_plane_from_4_points(ax, A, B, C, C, opacity)
         pass
+    
+    def find_angle_between_planes(self, plane1, plane2):
+        A, B, C, D = plane1
+        n1_hat = self.find_normal_vector(A, B, C, D)
+        A, B, C, D = plane2
+        n2_hat = self.find_normal_vector(A, B, C, D)
+        angle = np.rad2deg(np.arccos(np.dot(n1_hat, n2_hat)))
+        print("Angle between planes {:.3f} degree ".format(angle))
+        pass
 
     def find_normal_vector(self, A, B, C, D):
         """
@@ -155,12 +168,12 @@ cell1 = UnitCell(4,4,4,np.radians(90),np.radians(90),np.radians(90))
 cell1.draw()
 # cell1.find_plane((0,0,1))
 
-cell1 = UnitCell(4,4,9,np.radians(90),np.radians(90),np.radians(120))
-cell1.draw()
+# cell1 = UnitCell(4,4,9,np.radians(90),np.radians(90),np.radians(120))
+# cell1.draw()
 
-cell1 = UnitCell(4,9,4,np.radians(90),np.radians(120),np.radians(90))
-cell1.draw()
+# cell1 = UnitCell(4,9,4,np.radians(90),np.radians(120),np.radians(90))
+# cell1.draw()
 
-cell1 = UnitCell(9,4,4,np.radians(120),np.radians(90),np.radians(90))
-cell1.draw()
+# cell1 = UnitCell(9,4,4,np.radians(120),np.radians(90),np.radians(90))
+# cell1.draw()
 
