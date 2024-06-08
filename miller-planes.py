@@ -16,6 +16,9 @@ class UnitCell:
         self.beta  = beta
         self.gamma = gamma
         self.__calculate_points()
+        self.fig = plt.figure()
+        ax = plt.axes(projection='3d')
+        self.ax = ax
         pass
 
     def __calculate_points(self):
@@ -70,27 +73,87 @@ class UnitCell:
         return finalstr
         pass
 
-    def draw(self):
-        fig = plt.figure()
-        ax = plt.axes(projection='3d')
-        self.ax = ax
+    def draw_plane_calculate_angle(self, plane1=(1,1,1), plane2=None):
+        """
+        calculates angle between two planes.
+
+        plane2 : default None. In that case, xy plane is used with miller index (0,0,1)
+        """
+        corners1 = self.get_planes(plane1)
+        if plane2 is None:
+            corners2 = self.get_planes((0,0,1))
+        else:
+            corners2 = self.get_planes(plane2)
+            pass
         
+        if len(corners1) == 3:
+            self.draw_plane_from_4_points(self.points_dict[corners1[0]], 
+                                            self.points_dict[corners1[1]],
+                                            self.points_dict[corners1[2]],
+                                            self.points_dict[corners1[2]],
+                                            opacity=0.8
+                                            )
+        else:
+            plane_found = False
+            count = 0
+            while not plane_found:
+                count += 1
+                AB = np.array(self.points_dict[corners1[1]]) - np.array(self.points_dict[corners1[0]])
+                CD = np.array(self.points_dict[corners1[3]]) - np.array(self.points_dict[corners1[2]])
+                if np.dot(AB, CD) < 0:
+                    # angle is more than 90 degrees
+                    plane_found = True
+                else:
+                    # rotate the elements in cyclic order
+                    corners1 = corners1[1:] + corners1[:1]
+                    pass
+                if count >= 5:
+                    print("Cound not find correct order")
+                    break
+                pass
+            print("found order")
+            self.draw_plane_from_4_points(self.points_dict[corners1[0]], 
+                                            self.points_dict[corners1[1]],
+                                            self.points_dict[corners1[2]],
+                                            self.points_dict[corners1[3]],
+                                            opacity=0.8
+                                            )
+            
+        
+
+
+
+
+
+        pass
+    def show(self):
+        plt.legend()
+        plt.show()
+        pass
+    
+    def draw(self):
+        """
+        
+        """
         self.draw_points()
         self.draw_unit_cell()
+
+        #### Testing portion begin
         # A,B,C,D = self.find_plane((1,0,0))
         OO, PP, QQ, RR, SS, TT, UU, VV = self.points
         # self.draw_plane_from_4_points(ax, PP, QQ, SS, TT, opacity=0.8)
-        self.draw_plane_from_3_points(PP, TT, RR, opacity=0.8)
-        self.find_normal_vector(UU, VV, SS, TT)
-        self.find_normal_vector(OO, TT, SS, RR)
-        self.find_normal_vector(PP, UU, VV, QQ)
-        self.find_normal_vector(PP, TT, RR, RR)
-        self.find_angle_between_planes((OO, PP, QQ, RR), (PP, RR, TT, PP))
-        self.find_angle_between_planes((OO, PP, QQ, RR), (PP, QQ, SS, TT))
-        self.find_angle_between_planes((OO, PP, QQ, RR), (PP, QQ, TT, SS))
+        # self.draw_plane_from_3_points(PP, TT, RR, opacity=0.8)
+        # self.find_normal_vector(UU, VV, SS, TT)
+        # self.find_normal_vector(OO, TT, SS, RR)
+        # self.find_normal_vector(PP, UU, VV, QQ)
+        # self.find_normal_vector(PP, TT, RR, RR)
+        # self.find_angle_between_planes((OO, PP, QQ, RR), (PP, RR, TT, PP))
+        # self.find_angle_between_planes((OO, PP, QQ, RR), (PP, QQ, SS, TT))
+        # self.find_angle_between_planes((OO, PP, QQ, RR), (PP, QQ, TT, SS))
 
-        plt.legend()
-        plt.show()
+        #### Testing portion end
+
+
         pass
 
 
@@ -213,17 +276,19 @@ class UnitCell:
 cell1 = UnitCell(4,4,4,np.radians(90),np.radians(90),np.radians(90))
 cell1.draw()
 # cell1.find_plane((0,0,1))
-cell1.get_planes((1,0,1))
-cell1.get_planes((1,1,0))
-cell1.get_planes((0,1,1))
-cell1.get_planes((1,1,1))
+cell1.draw_plane_calculate_angle((1,1,1))
+cell1.show()
+# cell1.get_planes((1,0,1))
+# cell1.get_planes((1,1,0))
+# cell1.get_planes((0,1,1))
+# cell1.get_planes((1,1,1))
 
-cell1 = UnitCell(4,4,9,np.radians(90),np.radians(90),np.radians(120))
-cell1.draw()
+# cell1 = UnitCell(4,4,9,np.radians(90),np.radians(90),np.radians(120))
+# cell1.draw()
 
-cell1 = UnitCell(4,9,4,np.radians(90),np.radians(120),np.radians(90))
-cell1.draw()
+# cell1 = UnitCell(4,9,4,np.radians(90),np.radians(120),np.radians(90))
+# cell1.draw()
 
-cell1 = UnitCell(9,4,4,np.radians(120),np.radians(90),np.radians(90))
-cell1.draw()
+# cell1 = UnitCell(9,4,4,np.radians(120),np.radians(90),np.radians(90))
+# cell1.draw()
 
