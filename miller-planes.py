@@ -121,7 +121,7 @@ class UnitCell:
         """
         vector normal of ABCD plane/rectangle.
         """
-        print("find_normal_vector")
+        # print("find_normal_vector")
         
         vec1 = np.array(A) - np.array(B)
         vec2 = np.array(C) - np.array(D)
@@ -139,13 +139,11 @@ class UnitCell:
             exit(1)
             pass
 
-        print(A, B)
         print("vec1 ", vec1)
-        print(C, D)
         print("vec2 ", vec2)
 
         normal = np.cross(vec1, vec2)
-        print("normal ", normal)
+        # print("normal ", normal)
         normal /= np.linalg.norm(normal)
         print("normal ", normal)
         return normal
