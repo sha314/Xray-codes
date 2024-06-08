@@ -34,6 +34,7 @@ class UnitCell:
         UU = (a + c*np.cos(beta), + c*np.cos(alpha), c*np.sin(beta)* np.sin(alpha))
 
         self.points = [OO, PP, QQ, RR, SS, TT, UU, VV]
+        self.points_label="OPQRSTUV"
         pass
     
     def draw(self):
@@ -42,6 +43,9 @@ class UnitCell:
         
         self.draw_points(ax)
         self.draw_unit_cell(ax)
+        # A,B,C,D = self.find_plane((1,0,0))
+        # OO, PP, QQ, RR, SS, TT, UU, VV = self.points
+        # self.draw_plane_from_4_points(ax, PP, QQ, SS, TT)
         plt.legend()
         plt.show()
         pass
@@ -64,59 +68,17 @@ class UnitCell:
         OO, PP, QQ, RR, SS, TT, UU, VV = self.points
 
         # xy plane ORST -> arms OR, RS, ST, TO
-
-        arr = np.array([[OO, RR],
-                        [TT, SS]])
-        X = arr[:,:,0]
-        Y = arr[:,:,1]
-        Z = arr[:,:,2]
-        ax.plot_surface(X, Y, Z,  edgecolor='green', rstride=1, cstride=1, alpha=0.5)
-
+        self.draw_plane_from_4_points(ax, OO, RR, SS, TT)
         # xy plane PQVU
-
-        arr = np.array([[PP, QQ],
-                        [UU, VV]])
-        X = arr[:,:,0]
-        Y = arr[:,:,1]
-        Z = arr[:,:,2]
-        ax.plot_surface(X, Y, Z,  edgecolor='green', rstride=1, cstride=1, alpha=0.5)
-
-
+        self.draw_plane_from_4_points(ax, PP, QQ, VV, UU)
         # yz plane, OPQR
-        arr = np.array([[OO, PP],
-                        [RR, QQ]])
-        X = arr[:,:,0]
-        Y = arr[:,:,1]
-        Z = arr[:,:,2]
-        ax.plot_surface(X, Y, Z,  edgecolor='green', rstride=1, cstride=1, alpha=0.5)
-
-
+        self.draw_plane_from_4_points(ax, OO, PP, QQ, RR)
         # yz plane, TSVU
-
-        arr = np.array([[TT, SS],
-                        [UU, VV]])
-        X = arr[:,:,0]
-        Y = arr[:,:,1]
-        Z = arr[:,:,2]
-        ax.plot_surface(X, Y, Z,  edgecolor='green', rstride=1, cstride=1, alpha=0.5)
-
-
-
+        self.draw_plane_from_4_points(ax, TT, SS, VV, UU)
         # zx plane, OPUT
-        arr = np.array([[OO, PP],
-                        [TT, UU]])
-        X = arr[:,:,0]
-        Y = arr[:,:,1]
-        Z = arr[:,:,2]
-        ax.plot_surface(X, Y, Z,  edgecolor='green', rstride=1, cstride=1, alpha=0.5)
-
+        self.draw_plane_from_4_points(ax, OO, PP, UU, TT)
         # zx plane, RSVQ
-        arr = np.array([[RR, SS],
-                        [QQ, VV]])
-        X = arr[:,:,0]
-        Y = arr[:,:,1]
-        Z = arr[:,:,2]
-        ax.plot_surface(X, Y, Z,  edgecolor='green', rstride=1, cstride=1, alpha=0.5)
+        self.draw_plane_from_4_points(ax, RR, SS, VV, QQ)
 
         ax.set_xlabel('x', fontsize=12)
         ax.set_ylabel('y', fontsize=12)
@@ -130,7 +92,24 @@ class UnitCell:
         ax.set_zlim([0, m])
         pass
 
+    def draw_plane_from_4_points(self, ax, A, B, C, D, opacity=0.5):
+        """
+        ABCD rectangle. Four arms are AB, BC, CD, DA
+        """
+        arr = np.array([[A, B],
+                        [D, C]])
+        X = arr[:,:,0]
+        Y = arr[:,:,1]
+        Z = arr[:,:,2]
+        ax.plot_surface(X, Y, Z,  edgecolor='green', rstride=1, cstride=1, alpha=opacity)
 
+        pass
+
+
+
+# cell1 = UnitCell(4,4,4,np.radians(90),np.radians(90),np.radians(90))
+# cell1.draw()
+# cell1.find_plane((0,0,1))
 
 cell1 = UnitCell(4,4,9,np.radians(90),np.radians(90),np.radians(120))
 cell1.draw()
