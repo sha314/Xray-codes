@@ -47,6 +47,10 @@ class UnitCell:
         OO, PP, QQ, RR, SS, TT, UU, VV = self.points
         # self.draw_plane_from_4_points(ax, PP, QQ, SS, TT, opacity=0.8)
         self.draw_plane_from_3_points(ax, PP, TT, RR, opacity=0.8)
+        self.find_normal_vector(UU, VV, SS, TT)
+        self.find_normal_vector(OO, TT, SS, RR)
+        self.find_normal_vector(PP, UU, VV, QQ)
+        self.find_normal_vector(PP, TT, RR, RR)
         plt.legend()
         plt.show()
         pass
@@ -108,15 +112,49 @@ class UnitCell:
 
     def draw_plane_from_3_points(self, ax, A, B, C, opacity=0.3):
         """
-        ABCD rectangle. Four arms are AB, BC, CD, DA
+        ABC Triangle. Three arms are AB, BC, CA
         """
         self.draw_plane_from_4_points(ax, A, B, C, C, opacity)
         pass
 
+    def find_normal_vector(self, A, B, C, D):
+        """
+        vector normal of ABCD plane/rectangle.
+        """
+        print("find_normal_vector")
+        
+        vec1 = np.array(A) - np.array(B)
+        vec2 = np.array(C) - np.array(D)
+        if np.dot(vec1, vec2) <= 1e-5:
+            # If these are parallel vectors
+            print("parallel")
+            vec2 = np.array(A) - np.array(D)
+            pass
+        if np.dot(vec1, vec2) <= 1e-5:
+            print("parallel")
+            vec2 = np.array(A) - np.array(C)
+            pass
+        if np.dot(vec1, vec2) <= 1e-5:
+            print("non-parallel vectors not found")
+            exit(1)
+            pass
+
+        print(A, B)
+        print("vec1 ", vec1)
+        print(C, D)
+        print("vec2 ", vec2)
+
+        normal = np.cross(vec1, vec2)
+        print("normal ", normal)
+        normal /= np.linalg.norm(normal)
+        print("normal ", normal)
+        return normal
+
+    
 
 
-# cell1 = UnitCell(4,4,4,np.radians(90),np.radians(90),np.radians(90))
-# cell1.draw()
+cell1 = UnitCell(4,4,4,np.radians(90),np.radians(90),np.radians(90))
+cell1.draw()
 # cell1.find_plane((0,0,1))
 
 cell1 = UnitCell(4,4,9,np.radians(90),np.radians(90),np.radians(120))
