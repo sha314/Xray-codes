@@ -13,26 +13,24 @@ parser = argparse.ArgumentParser(
                     )
 
 
-parser.add_argument('-a', metavar='lengths', type=str, nargs='+',
-                    help='Crystal parameters a,b,c as comma seperated value', default=["4,4,4"])
+parser.add_argument('-a', metavar='lengths', type=str,
+                    help='Crystal parameters a,b,c as comma seperated value, no spaces allowed', default="4,4,4")
 
-parser.add_argument('-A', metavar='angles', type=str, nargs='+',
-                    help='Angle parameters alpha,beta,gamma as comma seperated value in degree', default=["90,90,90"])
+parser.add_argument('-A', metavar='angles', type=str, 
+                    help='Angle parameters alpha,beta,gamma as comma seperated value in degree, no spaces allowed', default="90,90,90")
 
-parser.add_argument('-i1', metavar='miller index of first plane. Required for angle calculation. Also plots the plane', type=str, nargs='+',
-                    help='three integers, seperated by comma', default=["1,0,1"])
+parser.add_argument('-i1', metavar='miller index of first plane. Required for angle calculation. Also plots the plane', type=str,
+                    help='three integers, seperated by comma, no spaces allowed. If first integer. If first integer is negative then use double qoute and leave a space character before first integer', default="1,0,1")
 
-parser.add_argument('-i2', metavar='miller index of 2nd plane. Nor required, uses xy plane if not provided', type=str, nargs='+',
-                    help='three integers, seperated by comma', default=["0,0,1"])
+parser.add_argument('-i2', metavar='miller index of 2nd plane. Nor required, uses xy plane if not provided', type=str,
+                    help='three integers, seperated by comma, no spaces allowed. If first integer. If first integer is negative then use double qoute and leave a space character before first integer', default="0,0,1")
 
 args = parser.parse_args()
 print(args)
-length_params = args.a[0]
-
-length_params = [int(i) for i in args.a[0].split(',')]
-angle_params = [int(i) for i in args.A[0].split(',')]
-plane1 = [int(i) for i in args.i1[0].split(',')]
-plane2 = [int(i) for i in args.i2[0].split(',')]
+length_params = [int(i) for i in args.a.split(',')]
+angle_params = [int(i) for i in args.A.split(',')]
+plane1 = [int(i) for i in args.i1.split(',')]
+plane2 = [int(i) for i in args.i2.split(',')]
 # print(length_params)
 # print(angle_params)
 # print(plane1)
