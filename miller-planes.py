@@ -8,6 +8,15 @@ import matplotlib.pyplot as plt
 
 
 class UnitCell:
+    """
+    Unit Cell class
+    Lattice parameters a,b,c,alpha,beta,gamma are provided and it can compute angles between planes and draw it.
+    It also makes a 3D surface plot of the unit cell. Angles are in degree.
+
+    Convention: arm 'a' is alsong 'x' axis and 'ab' plane is in 'xy' plane at z=0.
+    Everything is computed based on this convention.
+    
+    """
     def __init__(self, a,b,c,alpha,beta,gamma) -> None:
         self.a = a
         self.b = b
@@ -15,25 +24,22 @@ class UnitCell:
         self.alpha = alpha
         self.beta  = beta
         self.gamma = gamma
-        self.__calculate_points()
+        OO, TT, SS, RR, PP, QQ, VV, UU = self.__calculate_points(a, b, c, alpha, beta, gamma)
+        self.points = [OO, PP, QQ, RR, SS, TT, UU, VV]
+        self.points_dict = {'O':OO, 'P':PP, 'Q':QQ, 'R':RR, 'S':SS, 'T':TT, 'U':UU, 'V':VV}
+        self.points_label="OPQRSTUV"
+
+
         self.fig = plt.figure()
         ax = plt.axes(projection='3d')
         self.ax = ax
         pass
 
-    def __calculate_points(self):
-        a, b, c = self.a, self.b, self.c
-        alpha = self.alpha
-        beta  = self.beta
-        gamma = self.gamma
-
-        OO, TT, SS, RR, PP, QQ, VV, UU = self.calculate(a, b, c, alpha, beta, gamma)
-        self.points = [OO, PP, QQ, RR, SS, TT, UU, VV]
-        self.points_dict = {'O':OO, 'P':PP, 'Q':QQ, 'R':RR, 'S':SS, 'T':TT, 'U':UU, 'V':VV}
-        self.points_label="OPQRSTUV"
-        pass
-
-    def calculate(self, a, b, c, alpha, beta, gamma):
+    def __calculate_points(self, a, b, c, alpha, beta, gamma):
+        """
+        Convention: arm 'a' is alsong 'x' axis and 'ab' plane is in 'xy' plane at z=0.
+        Everything is computed based on this convention.
+        """
         OO = (0,0,0.0)
         TT = (a, 0, 0.0)
         SS = (a + b * np.cos(gamma), b*np.sin(gamma), 0)
@@ -46,6 +52,16 @@ class UnitCell:
         return OO,TT,SS,RR,PP,QQ,VV,UU
 
     def get_scalled_points(self, miller):
+        """
+        If all 3 component of miller indices are 1 or 0 then this method doesn't do anything essentially.
+        But if given miller index for a plane is (2,0,3) then we can compute coordinates of the corner of new
+        unit cell by scaling the arm lengths of old (original) unit cell.
+        a_new = a_old/2
+        b_new = b_old  # cannot divide by zero
+        c_new = c_old/3
+        Then use the new arm lengths to compute the corner coordinates.
+        Miller index (2,0,3) for original unit cell will correspond to (1,0,1) for new unit cell.
+        """
         a, b, c = self.a, self.b, self.c
         alpha, beta, gamma = self.alpha, self.beta, self.gamma
         if miller[0] != 0:
@@ -57,7 +73,7 @@ class UnitCell:
         if miller[2] != 0:
             c /= miller[2]
             pass
-        OO, TT, SS, RR, PP, QQ, VV, UU = self.calculate(a, b, c, alpha, beta, gamma) 
+        OO, TT, SS, RR, PP, QQ, VV, UU = self.__calculate_points(a, b, c, alpha, beta, gamma) 
         points_dict = {'O':np.array(OO), 'P':np.array(PP), 'Q':np.array(QQ), 'R':np.array(RR),
                              'S':np.array(SS), 'T':np.array(TT), 'U':np.array(UU), 'V':np.array(VV)}
         
@@ -110,26 +126,6 @@ class UnitCell:
         points_dict = self.get_scalled_points(miller)
         numbers = [points_dict[k] for k in label]
         return numbers
-    
-    def scale_points_using_miller_index(self, miller):
-        """
-        If miller index is (201) then we can create a new unit cell wil sidex
-        X_new = X_old/2
-        and keep other sides the same.
-        In this way (201) in old cell will correspond to (101) in new cell.
-        """
-        corners = self.get_planes_from_miller_index(miller)
-        A, B, C, D = self.get_num_from_label(corners)
-        miller_vec = np.array([i if i!= 0 else 1 for i in miller])
-        A = np.array(A)/miller_vec
-        B = np.array(B)/miller_vec
-        C = np.array(C)/miller_vec
-        D = np.array(D)/miller_vec
-        
-        return A, B, C, D
-
-
-        pass
 
     def draw_plane_calculate_angle(self, miller1, miller2=(0,0,1)):
         """
