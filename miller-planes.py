@@ -96,17 +96,13 @@ class UnitCell:
         Then use the new arm lengths to compute the corner coordinates.
         Miller index (2,0,3) for original unit cell will correspond to (1,0,1) for new unit cell.
         """
-        a, b, c = self.a, self.b, self.c
+        tmp = [self.a, self.b, self.c]
+        # to avoid divide by zero or negative number
+        miller2 = [abs(a) if a!=0 else 1 for a in miller]
+        tmp2 = [tmp[k]/miller2[k] for k in range(3)]
+        a, b, c = tmp2
         alpha, beta, gamma = self.alpha, self.beta, self.gamma
-        if miller[0] != 0:
-            a /= miller[0]
-            pass
-        if miller[1] != 0:
-            b /= miller[1]
-            pass
-        if miller[2] != 0:
-            c /= miller[2]
-            pass
+        
         OO, TT, SS, RR, PP, QQ, VV, UU = self.__calculate_points(a, b, c, alpha, beta, gamma) 
         points_dict = {'O':np.array(OO), 'P':np.array(PP), 'Q':np.array(QQ), 'R':np.array(RR),
                              'S':np.array(SS), 'T':np.array(TT), 'U':np.array(UU), 'V':np.array(VV)}
@@ -124,17 +120,35 @@ class UnitCell:
         010 or zx plane -> RSVQ
         001 or xy plane -> PQVU
         """
-        self.planes = {'100': 'TUVS', '010': 'RSVQ', '001': 'PQVU'}
+        self.planes = {'100': 'TUVS', '010': 'RSVQ', '001': 'PQVU', '-100':'PQRO','0-10':'OPUT','00-1':'ORST'}
         fullstr = ""
         if miller_index[0] > 0:
             fullstr += self.planes['100']
             pass
+        elif miller_index[0] < 0:
+            fullstr += self.planes['-100']
+            pass
+        else:
+            pass
+        # print(fullstr)
         if miller_index[1] > 0:
             fullstr += self.planes['010']
             pass
+        elif miller_index[1] < 0:
+            fullstr += self.planes['0-10']
+            pass
+        else:
+            pass
+        # print(fullstr)
         if miller_index[2] > 0:
             fullstr += self.planes['001']
             pass
+        elif miller_index[2] < 0:
+            fullstr += self.planes['00-1']
+            pass
+        else:
+            pass
+        # print(fullstr)
         countdict = {}
         for c in fullstr:
             if c in countdict.keys():
@@ -176,6 +190,13 @@ class UnitCell:
         self.find_angle_between_planes(miller1, miller2)
         points_dict = self.get_scalled_points(miller1)
 
+        corners1 = self.find_corner_order(corners1, points_dict)
+        
+        self.draw_plane_from_4_points_v2(corners1, points_dict, opacity=0.8)
+        pass
+
+    def find_corner_order(self, corners1, points_dict):
+        # print("before ", corners1)
         plane_found = False
         count = 0
         while not plane_found:
@@ -204,16 +225,20 @@ class UnitCell:
                 print("Cound not find correct order of points <<<<<<<<<<<<<<<<<<<<<<<<")
                 break
             pass
-        self.draw_plane_from_4_points(  points_dict[corners1[0]], 
-                                        points_dict[corners1[1]],
-                                        points_dict[corners1[2]],
-                                        points_dict[corners1[3]],
-                                        opacity=0.8
-                                        )
+        # print("after corners1 ", corners1)
+        return corners1
+    
+    def find_loop(self, points):
+        """
+        3 or 4 points will be given, it will order them in a way that makes a loop.
+          each step in the loop will represent an arm of the polygon.
+        """
+        AA, BB, CC, DD = points
+
+        
+
         pass
 
-
-        pass
     def show(self):
         plt.legend()
         plt.show()
@@ -229,7 +254,8 @@ class UnitCell:
         #### Testing portion begin
         # A,B,C,D = self.find_plane((1,0,0))
         OO, PP, QQ, RR, SS, TT, UU, VV = self.points
-        # self.draw_plane_from_4_points(ax, PP, QQ, SS, TT, opacity=0.8)
+        # self.draw_plane_from_4_points(RR, OO, VV, UU, opacity=0.8)
+        # self.draw_plane_from_4_points(PP, QQ, SS, TT, opacity=0.8)
         # self.draw_plane_from_3_points(PP, TT, RR, opacity=0.8)
         # self.find_normal_vector(UU, VV, SS, TT)
         # self.find_normal_vector(OO, TT, SS, RR)
@@ -249,14 +275,14 @@ class UnitCell:
     def draw_points(self):
         ax = self.ax
         OO, PP, QQ, RR, SS, TT, UU, VV = self.points
-        ax.scatter(OO[0],OO[1],OO[2], lw=4, label="O")
-        ax.scatter(PP[0],PP[1],PP[2], lw=4, label="P")
+        ax.scatter(OO[0],OO[1],OO[2], lw=12, label="O", marker='o')
+        ax.scatter(PP[0],PP[1],PP[2], lw=9, label="P", marker='H')
         ax.scatter(QQ[0],QQ[1],QQ[2], lw=4, label="Q")
-        ax.scatter(RR[0],RR[1],RR[2], lw=4, label="R")
-        ax.scatter(SS[0],SS[1],SS[2], lw=4, label="S")
-        ax.scatter(TT[0],TT[1],TT[2], lw=4, label="T")
-        ax.scatter(UU[0],UU[1],UU[2], lw=4, label="U")
-        ax.scatter(VV[0],VV[1],VV[2], lw=4, label="V")
+        ax.scatter(RR[0],RR[1],RR[2], lw=9, label="R", marker='D')
+        ax.scatter(SS[0],SS[1],SS[2], lw=5, label="S", marker='s')
+        ax.scatter(TT[0],TT[1],TT[2], lw=9, label="T", marker='o')
+        ax.scatter(UU[0],UU[1],UU[2], lw=5, label="U", marker='s')
+        ax.scatter(VV[0],VV[1],VV[2], lw=5, label="V", marker='s')
 
         pass
         
@@ -287,6 +313,27 @@ class UnitCell:
         ax.set_xlim([0, m])
         ax.set_ylim([0, m])
         ax.set_zlim([0, m])
+        pass
+
+    def draw_plane_from_4_points_v2(self, ABCD, points, opacity=0.3):
+        """
+        ABCD : String of 4 character
+        ABCD rectangle. Four arms are AB, BC, CD, DA
+        """
+        # print("draw_plane_from_4_points_v2 ", ABCD)
+        ax = self.ax
+        A = points[ABCD[0]]
+        B = points[ABCD[1]]
+        C = points[ABCD[2]]
+        D = points[ABCD[3]]
+                   
+        arr = np.array([[A, B],
+                        [D, C]])
+        X = arr[:,:,0]
+        Y = arr[:,:,1]
+        Z = arr[:,:,2]
+        ax.plot_surface(X, Y, Z,  edgecolor='green', rstride=1, cstride=1, alpha=opacity)
+
         pass
 
     def draw_plane_from_4_points(self, A, B, C, D, opacity=0.3):
@@ -383,16 +430,7 @@ class UnitCell:
         pass
 
 
-    def find_loop(self, points):
-        """
-        3 or 4 points will be given, it will order them in a way that makes a loop.
-          each step in the loop will represent an arm of the polygon.
-        """
-        AA, BB, CC, DD = points
 
-        
-
-        pass
 
 
 def testing():
@@ -402,8 +440,12 @@ def testing():
     # cell1.draw_plane_calculate_angle((0,0,1))
     # cell1.draw_plane_calculate_angle((1,1,1))
     # cell1.draw_plane_calculate_angle((2,0,1))
-    cell1.draw_plane_calculate_angle((0,1,1))
-    cell1.draw_plane_calculate_angle((1,1,0))
+    # cell1.draw_plane_calculate_angle((0,1,1))
+    # cell1.draw_plane_calculate_angle((1,0,1))
+    cell1.draw_plane_calculate_angle((-1,0,1))
+
+    # cell1.draw_plane_calculate_angle((1,0,1))
+    # cell1.draw_plane_calculate_angle((-1,0,1))
 
     # cell1.find_normal_vector(['T', 'S', 'Q', 'P'])
     # cell1.find_normal_vector("TSPQ")
@@ -413,35 +455,36 @@ def testing():
     # cell1.get_planes((1,1,1))
     cell1.show()
 
-    cell1 = UnitCell(4,4,9,np.radians(90),np.radians(90),np.radians(120))
-    cell1.draw()
-    cell1.draw_plane_calculate_angle((1,1,1))
-    cell1.draw_plane_calculate_angle((1,0,1))
-    cell1.draw_plane_calculate_angle((1,0,2))
+    # cell1 = UnitCell(4,4,9,np.radians(90),np.radians(90),np.radians(120))
+    # cell1.draw()
+    # cell1.draw_plane_calculate_angle((1,1,1))
+    # cell1.draw_plane_calculate_angle((1,0,1))
+    # cell1.draw_plane_calculate_angle((1,0,2))
     # cell1.draw_plane_calculate_angle((2,0,1))
     # cell1.draw_plane_calculate_angle((0,1,1))
     # cell1.draw_plane_calculate_angle((1,1,0))
-    cell1.show()
+    # cell1.show()
 
-    cell1 = UnitCell(4,9,4,np.radians(90),np.radians(120),np.radians(90))
-    cell1.draw()
+    # cell1 = UnitCell(4,9,4,np.radians(90),np.radians(120),np.radians(90))
+    # cell1.draw()
     # cell1.draw_plane_calculate_angle((1,1,1))
-    cell1.draw_plane_calculate_angle((1,0,1))
-    cell1.draw_plane_calculate_angle((1,0,2))
-    # cell1.draw_plane_calculate_angle((0,1,1))
-    # cell1.draw_plane_calculate_angle((1,1,0))
-    cell1.draw_plane_calculate_angle((2,0,1))
-    cell1.show()
-
-    cell1 = UnitCell(9,4,4,np.radians(120),np.radians(90),np.radians(90))
-    cell1.draw()
-    cell1.draw_plane_calculate_angle((1,1,1))
     # cell1.draw_plane_calculate_angle((1,0,1))
     # cell1.draw_plane_calculate_angle((1,0,2))
-    cell1.draw_plane_calculate_angle((0,1,1))
+    # cell1.draw_plane_calculate_angle((0,1,1))
     # cell1.draw_plane_calculate_angle((1,1,0))
-    cell1.draw_plane_calculate_angle((2,0,1))
-    cell1.show()
+    # cell1.draw_plane_calculate_angle((2,0,1))
+    # cell1.show()
+
+    # cell1 = UnitCell(9,4,4,np.radians(120),np.radians(90),np.radians(90))
+    # cell1.draw()
+    # cell1.draw_plane_calculate_angle((1,1,1))
+    # cell1.draw_plane_calculate_angle((1,0,1))
+    # cell1.draw_plane_calculate_angle((1,0,2))
+    # cell1.draw_plane_calculate_angle((0,1,1))
+    # cell1.draw_plane_calculate_angle((1,1,0))
+    # cell1.draw_plane_calculate_angle((2,0,1))
+    # cell1.show()
+    pass
 
 
 
@@ -459,3 +502,6 @@ if __name__ == "__main__":
     thecell.draw()
     thecell.draw_plane_calculate_angle(plane1, plane2)
     thecell.show()
+
+    # testing()
+    pass
