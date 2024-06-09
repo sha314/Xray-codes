@@ -19,10 +19,10 @@ parser.add_argument('-a', metavar='lengths', type=str, nargs='+',
 parser.add_argument('-A', metavar='angles', type=str, nargs='+',
                     help='Angle parameters alpha,beta,gamma as comma seperated value in degree', default=["90,90,90"])
 
-parser.add_argument('-p1', metavar='miller index of first plane. Required for angle calculation. Also plots the plane', type=str, nargs='+',
+parser.add_argument('-i1', metavar='miller index of first plane. Required for angle calculation. Also plots the plane', type=str, nargs='+',
                     help='three integers, seperated by comma', default=["1,0,1"])
 
-parser.add_argument('-p2', metavar='miller index of 2nd plane. Nor required, uses xy plane if not provided', type=str, nargs='+',
+parser.add_argument('-i2', metavar='miller index of 2nd plane. Nor required, uses xy plane if not provided', type=str, nargs='+',
                     help='three integers, seperated by comma', default=["0,0,1"])
 
 args = parser.parse_args()
@@ -31,12 +31,12 @@ length_params = args.a[0]
 
 length_params = [int(i) for i in args.a[0].split(',')]
 angle_params = [int(i) for i in args.A[0].split(',')]
-plane1 = [int(i) for i in args.p1[0].split(',')]
-plane2 = [int(i) for i in args.p2[0].split(',')]
-print(length_params)
-print(angle_params)
-print(plane1)
-print(plane2)
+plane1 = [int(i) for i in args.i1[0].split(',')]
+plane2 = [int(i) for i in args.i2[0].split(',')]
+# print(length_params)
+# print(angle_params)
+# print(plane1)
+# print(plane2)
 
 
 
@@ -184,6 +184,11 @@ class UnitCell:
             CD = np.array(points_dict[corners1[3]]) - np.array(points_dict[corners1[2]])
             dotProduct = np.dot(AB, CD)/np.linalg.norm(AB)/np.linalg.norm(CD)
             # print(dotProduct)
+            if abs(dotProduct) > 1.0:
+                print("! dotProduct ", dotProduct)
+                dotProduct /= abs(dotProduct)
+                pass
+
             # print(np.arccos(dotProduct))
             if np.arccos(dotProduct) >= np.pi/2:
                 # angle is more than 90 degrees
@@ -443,10 +448,10 @@ def testing():
 
 
 if __name__ == "__main__":
-    print(length_params)
-    print(angle_params)
-    print(plane1)
-    print(plane2)
+    # print(length_params)
+    # print(angle_params)
+    # print(plane1)
+    # print(plane2)
 
     thecell = UnitCell(length_params[0], length_params[1], length_params[2],
                        np.radians(angle_params[0]), np.radians(angle_params[1]), np.radians(angle_params[2])
