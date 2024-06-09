@@ -18,6 +18,7 @@ class UnitCell:
     
     """
     def __init__(self, a,b,c,alpha,beta,gamma) -> None:
+        print("Creating new UnitCell object")
         self.a = a
         self.b = b
         self.c = c
@@ -137,7 +138,7 @@ class UnitCell:
 
         corners1 = self.get_planes_from_miller_index(miller1)
         corners2 = self.get_planes_from_miller_index(miller2)
-        print("points1 ", corners1)
+        # print("points1 ", corners1)
         # print("points2 ", corners2)
         self.find_angle_between_planes(miller1, miller2)
         points_dict = self.get_scalled_points(miller1)
@@ -150,15 +151,15 @@ class UnitCell:
             CD = np.array(points_dict[corners1[3]]) - np.array(points_dict[corners1[2]])
             if np.dot(AB, CD) <= 1e-5:
                 # angle is more than 90 degrees
-                print("found order ", corners1)
+                # print("found order ", corners1)
                 plane_found = True
             else:
                 # rotate the elements in cyclic order
-                print("old order ", corners1)
+                # print("old order ", corners1)
                 corners1 = corners1[:1] + corners1[1:]
-                print("new order ", corners1)
+                # print("new order ", corners1)
                 pass
-            if count >= 5:
+            if count >= 7:
                 print("Cound not find correct order")
                 break
             pass
@@ -295,14 +296,14 @@ class UnitCell:
         # print("cross ", np.cross(vec1, vec2))
         if np.linalg.norm(np.cross(vec1, vec2)) <= 1e-5:
             # If these are parallel vectors
-            print("parallel")
+            # print("parallel")
             vec2 = np.array(A) - np.array(C)
             pass
         
         # print("vec2 ", vec2)
         # print("cross ", np.cross(vec1, vec2))
         if np.linalg.norm(np.cross(vec1, vec2)) <= 1e-5:
-            print("parallel")
+            # print("parallel")
             vec2 = np.array(B) - np.array(C)
             pass
         
@@ -331,7 +332,7 @@ class UnitCell:
         n1_hat = self.find_normal_vector_v2(miller1)
         n2_hat = self.find_normal_vector_v2(miller2)
         angle = np.rad2deg(np.arccos(np.dot(n1_hat, n2_hat)))
-        thestr = "Angle between planes {:.3f} degree ".format(angle)
+        thestr = "Angle between planes {} and {} is {:.3f} degree ".format(miller1, miller2, angle)
         
         if angle > 90:
             thestr += " Or {:.3f} degree ".format(180-angle)
