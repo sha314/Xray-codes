@@ -6,6 +6,25 @@ import glob
 import argparse
 import matplotlib.pyplot as plt
 
+parser = argparse.ArgumentParser(
+                    prog='Miller Planes',
+                    description="Draws unit cell and calculates angle between planes from 3 component miller indices",
+                    # epilog='Text at the bottom of help'
+                    )
+
+
+parser.add_argument('-a', metavar='lengths', type=str, nargs='+',
+                    help='Crystal parameters a,b,c as comma seperated value', default="4,4,4")
+
+parser.add_argument('-A', metavar='angles', type=str, nargs='+',
+                    help='Angle parameters alpha,beta,gamma as comma seperated value in degree', default="90,90,90")
+
+parser.add_argument('-p1', metavar='miller index of first plane. Required for angle calculation. Also plots the plane', type=str, nargs='+',
+                    help='three integers, seperated by comma', default="1,0,1")
+
+parser.add_argument('-p2', metavar='miller index of 2nd plane. Nor required, uses xy plane if not provided', type=str, nargs='+',
+                    help='three integers, seperated by comma', default="0,0,1")
+
 
 class UnitCell:
     def __init__(self, a,b,c,alpha,beta,gamma) -> None:
