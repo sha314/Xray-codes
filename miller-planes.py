@@ -27,18 +27,43 @@ class UnitCell:
         beta  = self.beta
         gamma = self.gamma
 
-        OO = (0,0,0)
-        TT = (a, 0, 0)
+        OO, TT, SS, RR, PP, QQ, VV, UU = self.calculate(a, b, c, alpha, beta, gamma)
+        self.points = [OO, PP, QQ, RR, SS, TT, UU, VV]
+        self.points_dict = {'O':OO, 'P':PP, 'Q':QQ, 'R':RR, 'S':SS, 'T':TT, 'U':UU, 'V':VV}
+        self.points_label="OPQRSTUV"
+        pass
+
+    def calculate(self, a, b, c, alpha, beta, gamma):
+        OO = (0,0,0.0)
+        TT = (a, 0, 0.0)
         SS = (a + b * np.cos(gamma), b*np.sin(gamma), 0)
         RR = (b*np.cos(gamma), b*np.sin(gamma), 0)
         PP = (c*np.cos(beta), c*np.cos(alpha), c*np.sin(beta)* np.sin(alpha))
         QQ = (b*np.cos(gamma)+c*np.cos(beta), b*np.sin(gamma) + c*np.cos(alpha), c*np.sin(beta)* np.sin(alpha))
         VV = (a + b*np.cos(gamma) + c*np.cos(beta), b*np.sin(gamma) + c*np.cos(alpha), c*np.sin(beta)* np.sin(alpha))
         UU = (a + c*np.cos(beta), + c*np.cos(alpha), c*np.sin(beta)* np.sin(alpha))
+        # print("Original Points ", UU)
+        return OO,TT,SS,RR,PP,QQ,VV,UU
 
-        self.points = [OO, PP, QQ, RR, SS, TT, UU, VV]
-        self.points_dict = {'O':OO, 'P':PP, 'Q':QQ, 'R':RR, 'S':SS, 'T':TT, 'U':UU, 'V':VV}
-        self.points_label="OPQRSTUV"
+    def get_scalled_points(self, miller):
+        a, b, c = self.a, self.b, self.c
+        alpha, beta, gamma = self.alpha, self.beta, self.gamma
+        if miller[0] != 0:
+            a /= miller[0]
+            pass
+        if miller[1] != 0:
+            b /= miller[1]
+            pass
+        if miller[2] != 0:
+            c /= miller[2]
+            pass
+        OO, TT, SS, RR, PP, QQ, VV, UU = self.calculate(a, b, c, alpha, beta, gamma) 
+        points_dict = {'O':np.array(OO), 'P':np.array(PP), 'Q':np.array(QQ), 'R':np.array(RR),
+                             'S':np.array(SS), 'T':np.array(TT), 'U':np.array(UU), 'V':np.array(VV)}
+        
+        # print(self.points_dict)
+        # print(points_dict)
+        return points_dict
         pass
 
     def get_planes_from_miller_index(self, miller_index=(1,1,1)):
@@ -79,6 +104,14 @@ class UnitCell:
 
     def get_num_from_label(self, label):
         numbers = [self.points_dict[k] for k in label]
+        return numbers
+    
+    def get_num_from_label_v3(self, label, miller):
+        """
+        with scalled corners
+        """
+        points_dict = self.get_scalled_points(miller)
+        numbers = [points_dict[k] for k in label]
         return numbers
     
     def scale_points_using_miller_index(self, miller):
@@ -140,13 +173,54 @@ class UnitCell:
                                         )
         pass
 
+    def draw_plane_calculate_angle_v3(self, miller1, miller2=(0,0,1)):
+        """
+        calculates angle between two planes.
+        miller1 : arbitray plane with 3 component miller index. draws this plane
+        miller2 : default is xy plane, with miller index (0,0,1). does not draw this plane
+        """
+        # self.draw_plane_calculate_angle_v2(miller1, miller2)
+
+        corners1 = self.get_planes_from_miller_index(miller1)
+        corners2 = self.get_planes_from_miller_index(miller2)
+        print("points1 ", corners1)
+        # print("points2 ", corners2)
+        self.find_angle_between_planes(miller1, miller2)
+        points_dict = self.get_scalled_points(miller1)
+
+        plane_found = False
+        count = 0
+        while not plane_found:
+            count += 1
+            AB = np.array(points_dict[corners1[1]]) - np.array(points_dict[corners1[0]])
+            CD = np.array(points_dict[corners1[3]]) - np.array(points_dict[corners1[2]])
+            if np.dot(AB, CD) < 0:
+                # angle is more than 90 degrees
+                plane_found = True
+            else:
+                # rotate the elements in cyclic order
+                corners1 = corners1[1:] + corners1[:1]
+                pass
+            if count >= 5:
+                print("Cound not find correct order")
+                break
+            pass
+        print("found order ", corners1)
+        self.draw_plane_from_4_points(points_dict[corners1[0]], 
+                                        points_dict[corners1[1]],
+                                        points_dict[corners1[2]],
+                                        points_dict[corners1[3]],
+                                        opacity=0.8
+                                        )
+        pass
+
     def draw_plane_calculate_angle(self, miller1, miller2=(0,0,1)):
         """
         calculates angle between two planes.
 
         miller2 : default is xy plane, with miller index (0,0,1)
         """
-        self.draw_plane_calculate_angle_v2(miller1, miller2)
+        self.draw_plane_calculate_angle_v3(miller1, miller2)
 
         # corners1 = self.get_planes_from_miller_index(miller1)
         # corners2 = self.get_planes_from_miller_index(miller2)
@@ -290,13 +364,68 @@ class UnitCell:
         self.draw_plane_from_4_points(A, B, C, C, opacity)
         pass
     
+    def find_normal_vector_v2(self, miller):
+        """
+        miller : miller index of the plane
+
+        uses scalled corners
+        
+        It will find a string of four character, "ABCD"
+        vector normal of ABCD plane/rectangle.
+
+        If miller index is (201) then we can create a new unit cell wil sidex
+        X_new = X_old/2
+        and keep other sides the same.
+        In this way (201) in old cell will correspond to (101) in new cell.
+        """
+        corners = self.get_planes_from_miller_index(miller)
+
+        # print("find_normal_vector")
+        A, B, C, D = self.get_num_from_label_v3(corners, miller)
+        
+        
+        vec1 = np.array(A) - np.array(B)
+        vec2 = np.array(C) - np.array(D)
+        print("vec1 ", vec1)
+        print("vec2 ", vec2)
+        # print("cross ", np.cross(vec1, vec2))
+        if np.linalg.norm(np.cross(vec1, vec2)) <= 1e-5:
+            # If these are parallel vectors
+            print("parallel")
+            vec2 = np.array(A) - np.array(C)
+            pass
+        
+        # print("vec2 ", vec2)
+        # print("cross ", np.cross(vec1, vec2))
+        if np.linalg.norm(np.cross(vec1, vec2)) <= 1e-5:
+            print("parallel")
+            vec2 = np.array(B) - np.array(C)
+            pass
+        
+        # print("vec2 ", vec2)
+        # print("cross ", np.cross(vec1, vec2))
+        if np.linalg.norm(np.cross(vec1, vec2)) <= 1e-5:
+            print("non-parallel vectors not found")
+            exit(1)
+            pass
+
+        print("corners of plane ", corners)
+        print("vec1 ", vec1)
+        print("vec2 ", vec2)
+
+        normal = np.cross(vec1, vec2)
+        # print("normal ", normal)
+        normal /= np.linalg.norm(normal)
+        print("normal to the plane ", normal)
+        return normal
+    
     def find_angle_between_planes(self, miller1, miller2):
         """
         plane1 : labels of a plane corners
         plane2 : labels of a plane corners
         """
-        n1_hat = self.find_normal_vector(miller1)
-        n2_hat = self.find_normal_vector(miller2)
+        n1_hat = self.find_normal_vector_v2(miller1)
+        n2_hat = self.find_normal_vector_v2(miller2)
         angle = np.rad2deg(np.arccos(np.dot(n1_hat, n2_hat)))
         thestr = "Angle between planes {:.3f} degree ".format(angle)
         
@@ -407,19 +536,19 @@ class UnitCell:
 cell1 = UnitCell(4,4,4,np.radians(90),np.radians(90),np.radians(90))
 # cell1.get_num_from_label_v2((0,0,2))
 cell1.draw()
-# cell1.find_plane((0,0,1))
+# cell1.draw_plane_calculate_angle((0,0,1))
 # cell1.draw_plane_calculate_angle((1,1,1))
-cell1.draw_plane_calculate_angle_v2((2,0,1))
+# cell1.draw_plane_calculate_angle((2,0,1))
 # cell1.draw_plane_calculate_angle((0,1,1))
 # cell1.draw_plane_calculate_angle((1,1,0))
 
 # cell1.find_normal_vector(['T', 'S', 'Q', 'P'])
 # cell1.find_normal_vector("TSPQ")
-cell1.show()
 # cell1.get_planes((1,0,1))
 # cell1.get_planes((1,1,0))
 # cell1.get_planes((0,1,1))
 # cell1.get_planes((1,1,1))
+cell1.show()
 
 cell1 = UnitCell(4,4,9,np.radians(90),np.radians(90),np.radians(120))
 cell1.draw()
@@ -436,6 +565,7 @@ cell1.show()
 # cell1.draw_plane_calculate_angle((1,0,1))
 # cell1.draw_plane_calculate_angle((0,1,1))
 # cell1.draw_plane_calculate_angle((1,1,0))
+# cell1.draw_plane_calculate_angle((2,0,1))
 # cell1.show()
 
 # cell1 = UnitCell(9,4,4,np.radians(120),np.radians(90),np.radians(90))
@@ -444,6 +574,7 @@ cell1.show()
 # cell1.draw_plane_calculate_angle((1,0,1))
 # cell1.draw_plane_calculate_angle((0,1,1))
 # cell1.draw_plane_calculate_angle((1,1,0))
+# cell1.draw_plane_calculate_angle((2,0,1))
 # cell1.show()
 
 
