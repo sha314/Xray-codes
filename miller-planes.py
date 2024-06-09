@@ -14,16 +14,30 @@ parser = argparse.ArgumentParser(
 
 
 parser.add_argument('-a', metavar='lengths', type=str, nargs='+',
-                    help='Crystal parameters a,b,c as comma seperated value', default="4,4,4")
+                    help='Crystal parameters a,b,c as comma seperated value', default=["4,4,4"])
 
 parser.add_argument('-A', metavar='angles', type=str, nargs='+',
-                    help='Angle parameters alpha,beta,gamma as comma seperated value in degree', default="90,90,90")
+                    help='Angle parameters alpha,beta,gamma as comma seperated value in degree', default=["90,90,90"])
 
 parser.add_argument('-p1', metavar='miller index of first plane. Required for angle calculation. Also plots the plane', type=str, nargs='+',
-                    help='three integers, seperated by comma', default="1,0,1")
+                    help='three integers, seperated by comma', default=["1,0,1"])
 
 parser.add_argument('-p2', metavar='miller index of 2nd plane. Nor required, uses xy plane if not provided', type=str, nargs='+',
-                    help='three integers, seperated by comma', default="0,0,1")
+                    help='three integers, seperated by comma', default=["0,0,1"])
+
+args = parser.parse_args()
+print(args)
+length_params = args.a[0]
+
+length_params = [int(i) for i in args.a[0].split(',')]
+angle_params = [int(i) for i in args.A[0].split(',')]
+plane1 = [int(i) for i in args.p1[0].split(',')]
+plane2 = [int(i) for i in args.p2[0].split(',')]
+print(length_params)
+print(angle_params)
+print(plane1)
+print(plane2)
+
 
 
 class UnitCell:
@@ -376,52 +390,67 @@ class UnitCell:
         pass
 
 
-cell1 = UnitCell(4,4,4,np.radians(90),np.radians(90),np.radians(90))
-# cell1.get_num_from_label_v2((0,0,2))
-cell1.draw()
-# cell1.draw_plane_calculate_angle((0,0,1))
-# cell1.draw_plane_calculate_angle((1,1,1))
-# cell1.draw_plane_calculate_angle((2,0,1))
-cell1.draw_plane_calculate_angle((0,1,1))
-cell1.draw_plane_calculate_angle((1,1,0))
+def testing():
+    cell1 = UnitCell(4,4,4,np.radians(90),np.radians(90),np.radians(90))
+    # cell1.get_num_from_label_v2((0,0,2))
+    cell1.draw()
+    # cell1.draw_plane_calculate_angle((0,0,1))
+    # cell1.draw_plane_calculate_angle((1,1,1))
+    # cell1.draw_plane_calculate_angle((2,0,1))
+    cell1.draw_plane_calculate_angle((0,1,1))
+    cell1.draw_plane_calculate_angle((1,1,0))
 
-# cell1.find_normal_vector(['T', 'S', 'Q', 'P'])
-# cell1.find_normal_vector("TSPQ")
-# cell1.get_planes((1,0,1))
-# cell1.get_planes((1,1,0))
-# cell1.get_planes((0,1,1))
-# cell1.get_planes((1,1,1))
-cell1.show()
+    # cell1.find_normal_vector(['T', 'S', 'Q', 'P'])
+    # cell1.find_normal_vector("TSPQ")
+    # cell1.get_planes((1,0,1))
+    # cell1.get_planes((1,1,0))
+    # cell1.get_planes((0,1,1))
+    # cell1.get_planes((1,1,1))
+    cell1.show()
 
-cell1 = UnitCell(4,4,9,np.radians(90),np.radians(90),np.radians(120))
-cell1.draw()
-cell1.draw_plane_calculate_angle((1,1,1))
-cell1.draw_plane_calculate_angle((1,0,1))
-cell1.draw_plane_calculate_angle((1,0,2))
-# cell1.draw_plane_calculate_angle((2,0,1))
-# cell1.draw_plane_calculate_angle((0,1,1))
-# cell1.draw_plane_calculate_angle((1,1,0))
-cell1.show()
+    cell1 = UnitCell(4,4,9,np.radians(90),np.radians(90),np.radians(120))
+    cell1.draw()
+    cell1.draw_plane_calculate_angle((1,1,1))
+    cell1.draw_plane_calculate_angle((1,0,1))
+    cell1.draw_plane_calculate_angle((1,0,2))
+    # cell1.draw_plane_calculate_angle((2,0,1))
+    # cell1.draw_plane_calculate_angle((0,1,1))
+    # cell1.draw_plane_calculate_angle((1,1,0))
+    cell1.show()
 
-cell1 = UnitCell(4,9,4,np.radians(90),np.radians(120),np.radians(90))
-cell1.draw()
-# cell1.draw_plane_calculate_angle((1,1,1))
-cell1.draw_plane_calculate_angle((1,0,1))
-cell1.draw_plane_calculate_angle((1,0,2))
-# cell1.draw_plane_calculate_angle((0,1,1))
-# cell1.draw_plane_calculate_angle((1,1,0))
-cell1.draw_plane_calculate_angle((2,0,1))
-cell1.show()
+    cell1 = UnitCell(4,9,4,np.radians(90),np.radians(120),np.radians(90))
+    cell1.draw()
+    # cell1.draw_plane_calculate_angle((1,1,1))
+    cell1.draw_plane_calculate_angle((1,0,1))
+    cell1.draw_plane_calculate_angle((1,0,2))
+    # cell1.draw_plane_calculate_angle((0,1,1))
+    # cell1.draw_plane_calculate_angle((1,1,0))
+    cell1.draw_plane_calculate_angle((2,0,1))
+    cell1.show()
 
-cell1 = UnitCell(9,4,4,np.radians(120),np.radians(90),np.radians(90))
-cell1.draw()
-cell1.draw_plane_calculate_angle((1,1,1))
-# cell1.draw_plane_calculate_angle((1,0,1))
-# cell1.draw_plane_calculate_angle((1,0,2))
-cell1.draw_plane_calculate_angle((0,1,1))
-# cell1.draw_plane_calculate_angle((1,1,0))
-cell1.draw_plane_calculate_angle((2,0,1))
-cell1.show()
+    cell1 = UnitCell(9,4,4,np.radians(120),np.radians(90),np.radians(90))
+    cell1.draw()
+    cell1.draw_plane_calculate_angle((1,1,1))
+    # cell1.draw_plane_calculate_angle((1,0,1))
+    # cell1.draw_plane_calculate_angle((1,0,2))
+    cell1.draw_plane_calculate_angle((0,1,1))
+    # cell1.draw_plane_calculate_angle((1,1,0))
+    cell1.draw_plane_calculate_angle((2,0,1))
+    cell1.show()
 
 
 
+
+
+if __name__ == "__main__":
+    print(length_params)
+    print(angle_params)
+    print(plane1)
+    print(plane2)
+
+    thecell = UnitCell(length_params[0], length_params[1], length_params[2],
+                       np.radians(angle_params[0]), np.radians(angle_params[1]), np.radians(angle_params[2])
+                       )
+    thecell.draw()
+    thecell.draw_plane_calculate_angle(plane1, plane2)
+    thecell.show()
