@@ -148,20 +148,22 @@ class UnitCell:
             count += 1
             AB = np.array(points_dict[corners1[1]]) - np.array(points_dict[corners1[0]])
             CD = np.array(points_dict[corners1[3]]) - np.array(points_dict[corners1[2]])
-            if np.dot(AB, CD) < 0:
+            if np.dot(AB, CD) <= 1e-5:
                 # angle is more than 90 degrees
+                print("found order ", corners1)
                 plane_found = True
             else:
                 # rotate the elements in cyclic order
-                corners1 = corners1[1:] + corners1[:1]
+                print("old order ", corners1)
+                corners1 = corners1[:1] + corners1[1:]
+                print("new order ", corners1)
                 pass
             if count >= 5:
                 print("Cound not find correct order")
                 break
             pass
-        print("found order ", corners1)
-        self.draw_plane_from_4_points(points_dict[corners1[0]], 
-                                        points_dict[corners1[1]],
+        self.draw_plane_from_4_points(points_dict[corners1[1]], 
+                                        points_dict[corners1[0]],
                                         points_dict[corners1[2]],
                                         points_dict[corners1[3]],
                                         opacity=0.8
@@ -355,10 +357,10 @@ cell1 = UnitCell(4,4,4,np.radians(90),np.radians(90),np.radians(90))
 # cell1.get_num_from_label_v2((0,0,2))
 cell1.draw()
 # cell1.draw_plane_calculate_angle((0,0,1))
-cell1.draw_plane_calculate_angle((1,1,1))
-# cell1.draw_plane_calculate_angle((2,0,1))
-# cell1.draw_plane_calculate_angle((0,1,1))
-# cell1.draw_plane_calculate_angle((1,1,0))
+# cell1.draw_plane_calculate_angle((1,1,1))
+cell1.draw_plane_calculate_angle((2,0,1))
+cell1.draw_plane_calculate_angle((0,1,1))
+cell1.draw_plane_calculate_angle((1,1,0))
 
 # cell1.find_normal_vector(['T', 'S', 'Q', 'P'])
 # cell1.find_normal_vector("TSPQ")
@@ -371,31 +373,31 @@ cell1.show()
 cell1 = UnitCell(4,4,9,np.radians(90),np.radians(90),np.radians(120))
 cell1.draw()
 # cell1.draw_plane_calculate_angle((1,1,1))
-cell1.draw_plane_calculate_angle((1,0,1))
-cell1.draw_plane_calculate_angle((1,0,2))
-# cell1.draw_plane_calculate_angle((2,0,1))
-# cell1.draw_plane_calculate_angle((0,1,1))
-# cell1.draw_plane_calculate_angle((1,1,0))
+# cell1.draw_plane_calculate_angle((1,0,1))
+# cell1.draw_plane_calculate_angle((1,0,2))
+cell1.draw_plane_calculate_angle((2,0,1))
+cell1.draw_plane_calculate_angle((0,1,1))
+cell1.draw_plane_calculate_angle((1,1,0))
 cell1.show()
 
 cell1 = UnitCell(4,9,4,np.radians(90),np.radians(120),np.radians(90))
 cell1.draw()
 # cell1.draw_plane_calculate_angle((1,1,1))
-cell1.draw_plane_calculate_angle((1,0,1))
-cell1.draw_plane_calculate_angle((1,0,2))
+# cell1.draw_plane_calculate_angle((1,0,1))
+# cell1.draw_plane_calculate_angle((1,0,2))
 # cell1.draw_plane_calculate_angle((0,1,1))
-# cell1.draw_plane_calculate_angle((1,1,0))
-# cell1.draw_plane_calculate_angle((2,0,1))
+cell1.draw_plane_calculate_angle((1,1,0))
+cell1.draw_plane_calculate_angle((2,0,1))
 cell1.show()
 
 cell1 = UnitCell(9,4,4,np.radians(120),np.radians(90),np.radians(90))
 cell1.draw()
 # cell1.draw_plane_calculate_angle((1,1,1))
-cell1.draw_plane_calculate_angle((1,0,1))
-cell1.draw_plane_calculate_angle((1,0,2))
+# cell1.draw_plane_calculate_angle((1,0,1))
+# cell1.draw_plane_calculate_angle((1,0,2))
 # cell1.draw_plane_calculate_angle((0,1,1))
-# cell1.draw_plane_calculate_angle((1,1,0))
-# cell1.draw_plane_calculate_angle((2,0,1))
+cell1.draw_plane_calculate_angle((1,1,0))
+cell1.draw_plane_calculate_angle((2,0,1))
 cell1.show()
 
 
