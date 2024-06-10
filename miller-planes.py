@@ -27,8 +27,8 @@ parser.add_argument('-i2', metavar='miller index of 2nd plane. Nor required, use
 
 args = parser.parse_args()
 print(args)
-length_params = [int(i) for i in args.a.split(',')]
-angle_params = [int(i) for i in args.A.split(',')]
+length_params = [float(i) for i in args.a.split(',')]
+angle_params = [float(i) for i in args.A.split(',')]
 plane1 = [int(i) for i in args.i1.split(',')]
 plane2 = [int(i) for i in args.i2.split(',')]
 # print(length_params)
