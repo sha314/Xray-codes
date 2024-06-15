@@ -177,18 +177,21 @@ class UnitCell:
         miller1 : arbitray plane with 3 component miller index. draws this plane
         miller2 : default is xy plane, with miller index (0,0,1). does not draw this plane
         """
-        # self.draw_plane_calculate_angle_v2(miller1, miller2)
+        self.find_angle_between_planes(miller1, miller2)
 
         corners1 = self.get_planes_from_miller_index(miller1)
         corners2 = self.get_planes_from_miller_index(miller2)
         # print("points1 ", corners1)
         # print("points2 ", corners2)
-        self.find_angle_between_planes(miller1, miller2)
-        points_dict = self.get_scalled_points(miller1)
 
-        corners1 = self.find_corner_order(corners1, points_dict)
+        points_dict1= self.get_scalled_points(miller1)
+        points_dict2 = self.get_scalled_points(miller2)
+
+        corners1 = self.find_corner_order(corners1, points_dict1)
+        corners2 = self.find_corner_order(corners2, points_dict2)
         
-        self.draw_plane_from_4_points_v2(corners1, points_dict, opacity=0.8)
+        self.draw_plane_from_4_points_v2(corners1, points_dict1, opacity=0.8)
+        self.draw_plane_from_4_points_v2(corners2, points_dict2, opacity=0.8)
         pass
 
     def find_corner_order(self, corners1, points_dict):
