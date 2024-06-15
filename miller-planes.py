@@ -17,11 +17,15 @@ parser.add_argument('-a', metavar='lengths', type=str,
 parser.add_argument('-A', metavar='angles', type=str, 
                     help='Angle parameters alpha,beta,gamma as comma seperated value in degree, no spaces allowed', default="90,90,90")
 
-parser.add_argument('-i1', metavar='miller index of first plane. Required for angle calculation. Also plots the plane', type=str,
-                    help='three integers, seperated by comma, no spaces allowed. If first integer. If first integer is negative then use double qoute and leave a space character before first integer', default="1,0,1")
+parser.add_argument('-i1', metavar='index1', type=str,
+                    help='Miller index of first plane. Required for angle calculation. Also plots the plane. Three integers, seperated by comma, no spaces allowed. If first integer. If first integer is negative then use double qoute and leave a space character before first integer', default="1,0,1")
 
-parser.add_argument('-i2', metavar='miller index of 2nd plane. Nor required, uses xy plane if not provided', type=str,
-                    help='three integers, seperated by comma, no spaces allowed. If first integer. If first integer is negative then use double qoute and leave a space character before first integer', default="0,0,1")
+parser.add_argument('-i2', metavar='index2', type=str,
+                    help='Miller index of 2nd plane. Nor required, uses xy plane if not provided. Three integers, seperated by comma, no spaces allowed. If first integer. If first integer is negative then use double qoute and leave a space character before first integer', default="0,0,1")
+
+parser.add_argument('-c',
+                    help="If provided, then the i2 miller index is considered for a cubic unit cell. it's a flag, no argument is requred", action='store_true')
+
 
 args = parser.parse_args()
 print(args)
@@ -29,6 +33,7 @@ length_params = [float(i) for i in args.a.split(',')]
 angle_params = [float(i) for i in args.A.split(',')]
 plane1 = [int(i) for i in args.i1.split(',')]
 plane2 = [int(i) for i in args.i2.split(',')]
+print(args.c)
 # print(length_params)
 # print(angle_params)
 # print(plane1)
@@ -46,7 +51,12 @@ class UnitCell:
     Everything is computed based on this convention.
     
     """
-    def __init__(self, a,b,c,alpha,beta,gamma) -> None:
+    def __init__(self, a,b,c,alpha,beta,gamma, ax=None) -> None:
+        """
+        a,b,c : arm lengths of the lattice
+        alpha,beta,gamma : angle beteween arms in standard convention. In radian unit.
+        ax : matplotlib 3D axis
+        """
         print("Creating new UnitCell object")
         self.a = a
         self.b = b
@@ -59,10 +69,12 @@ class UnitCell:
         self.points_dict = {'O':OO, 'P':PP, 'Q':QQ, 'R':RR, 'S':SS, 'T':TT, 'U':UU, 'V':VV}
         self.points_label="OPQRSTUV"
 
-
-        self.fig = plt.figure()
-        ax = plt.axes(projection='3d')
-        self.ax = ax
+        if ax is None:
+            self.fig = plt.figure()
+            ax = plt.axes(projection='3d')
+            self.ax = ax
+        else:
+            self.ax = ax
         pass
 
     def __calculate_points(self, a, b, c, alpha, beta, gamma):
@@ -98,6 +110,36 @@ class UnitCell:
         tmp2 = [tmp[k]/miller2[k] for k in range(3)]
         a, b, c = tmp2
         alpha, beta, gamma = self.alpha, self.beta, self.gamma
+        
+        OO, TT, SS, RR, PP, QQ, VV, UU = self.__calculate_points(a, b, c, alpha, beta, gamma) 
+        points_dict = {'O':np.array(OO), 'P':np.array(PP), 'Q':np.array(QQ), 'R':np.array(RR),
+                             'S':np.array(SS), 'T':np.array(TT), 'U':np.array(UU), 'V':np.array(VV)}
+        
+        # print(self.points_dict)
+        # print(points_dict)
+        return points_dict
+        pass
+
+    def get_scalled_points_cubic(self, miller):
+        """
+        If all 3 component of miller indices are 1 or 0 then this method doesn't do anything essentially.
+        But if given miller index for a plane is (2,0,3) then we can compute coordinates of the corner of new
+        unit cell by scaling the arm lengths of old (original) unit cell.
+        a_new = a_old/2
+        b_new = b_old  # cannot divide by zero
+        c_new = c_old/3
+        Then use the new arm lengths to compute the corner coordinates.
+        Miller index (2,0,3) for original unit cell will correspond to (1,0,1) for new unit cell.
+        """
+        tmp = [self.a, self.b, self.c]
+        mx = np.max(tmp)
+        tmp = [mx, mx, mx]
+        # to avoid divide by zero or negative number
+        miller2 = [abs(a) if a!=0 else 1 for a in miller]
+        tmp2 = [tmp[k]/miller2[k] for k in range(3)]
+        # print("tmp2 ", tmp2)
+        a, b, c = tmp2
+        alpha, beta, gamma = np.pi/2, np.pi/2, np.pi/2
         
         OO, TT, SS, RR, PP, QQ, VV, UU = self.__calculate_points(a, b, c, alpha, beta, gamma) 
         points_dict = {'O':np.array(OO), 'P':np.array(PP), 'Q':np.array(QQ), 'R':np.array(RR),
@@ -185,7 +227,11 @@ class UnitCell:
         # print("points2 ", corners2)
 
         points_dict1= self.get_scalled_points(miller1)
-        points_dict2 = self.get_scalled_points(miller2)
+        if args.c:
+            points_dict2 = self.get_scalled_points_cubic(miller2)
+            # print(points_dict2)
+        else:
+            points_dict2 = self.get_scalled_points(miller2)
 
         corners1 = self.find_corner_order(corners1, points_dict1)
         corners2 = self.find_corner_order(corners2, points_dict2)
