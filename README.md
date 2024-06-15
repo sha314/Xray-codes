@@ -36,3 +36,15 @@ for thin film
 10. Now that we have the loop, we can find angles between planes by taking dot product of the normal vectors. To find the normal vector, we take two random and unique vectors on that plane and take cross product.
 
 
+# Examples miller-planes.py
+Assuming all packages are installed running the following command
+
+$ python miller-planes.py
+
+Creates the following plot
+![Cubic Unit Cell](./res/plane%20(101).png)
+
+
+The following command shows help in terminal 
+
+$ python miller-planes.py -h

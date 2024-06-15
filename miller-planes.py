@@ -1,8 +1,6 @@
 # This code finds the psi angle of a bravis lattice with respect to it's orientaiton on the XRD Stage
 
 import numpy as np
-import pandas as pd
-import glob
 import argparse
 import matplotlib.pyplot as plt
 
