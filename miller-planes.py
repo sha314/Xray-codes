@@ -75,7 +75,21 @@ class UnitCell:
             self.ax = ax
         else:
             self.ax = ax
+            pass
+        self.cubic_ref = False
         pass
+    
+    def set_cubic_reference(self, state=False):
+        """
+        If set true, then the 2nd miller index for angle calculatation will use a cubic system as reference.
+        For example: say the arms are "10,10,3" and angles are "90,90,120" that makes the Hexagonal Unit Cell.
+        i1 = (1,0,1)
+        i2 = (1,0,0)
+
+        by default it will calculate angle between "1,0,1" and "1,0,0" of the Hexagonal Unit Cell.
+        by contrast, if cubic_ref is True then "1,0,0" will be a plane of Cubic cell while "1,0,1" is still hexagonal.
+        """
+        self.cubic_ref = state
 
     def __calculate_points(self, a, b, c, alpha, beta, gamma):
         """
@@ -132,8 +146,6 @@ class UnitCell:
         Miller index (2,0,3) for original unit cell will correspond to (1,0,1) for new unit cell.
         """
         tmp = [self.a, self.b, self.c]
-        mx = np.max(tmp)
-        tmp = [mx, mx, mx]
         # to avoid divide by zero or negative number
         miller2 = [abs(a) if a!=0 else 1 for a in miller]
         tmp2 = [tmp[k]/miller2[k] for k in range(3)]
@@ -219,15 +231,14 @@ class UnitCell:
         miller1 : arbitray plane with 3 component miller index. draws this plane
         miller2 : default is xy plane, with miller index (0,0,1). does not draw this plane
         """
-        self.find_angle_between_planes(miller1, miller2)
-
+        
         corners1 = self.get_planes_from_miller_index(miller1)
         corners2 = self.get_planes_from_miller_index(miller2)
         # print("points1 ", corners1)
         # print("points2 ", corners2)
 
         points_dict1= self.get_scalled_points(miller1)
-        if args.c:
+        if self.cubic_ref:
             points_dict2 = self.get_scalled_points_cubic(miller2)
             # print(points_dict2)
         else:
@@ -236,6 +247,8 @@ class UnitCell:
         corners1 = self.find_corner_order(corners1, points_dict1)
         corners2 = self.find_corner_order(corners2, points_dict2)
         
+        self.find_angle_between_planes_v2(miller1, miller2, points_dict2)
+
         self.draw_plane_from_4_points_v2(corners1, points_dict1, opacity=0.8)
         self.draw_plane_from_4_points_v2(corners2, points_dict2, opacity=0.8)
         pass
@@ -457,6 +470,80 @@ class UnitCell:
         print("normal to the plane ", normal)
         return normal
     
+
+    def find_normal_vector_v3(self, miller, points_dict):
+        """
+        miller : miller index of the plane
+
+        uses scalled corners
+        
+        It will find a string of four character, "ABCD"
+        vector normal of ABCD plane/rectangle.
+
+        If miller index is (201) then we can create a new unit cell wil sidex
+        X_new = X_old/2
+        and keep other sides the same.
+        In this way (201) in old cell will correspond to (101) in new cell.
+        """
+        corners = self.get_planes_from_miller_index(miller)
+
+        # print("find_normal_vector")
+        A, B, C, D = [points_dict[k] for k in corners]
+        
+        
+        vec1 = np.array(A) - np.array(B)
+        vec2 = np.array(C) - np.array(D)
+        # print("vec1 ", vec1)
+        # print("vec2 ", vec2)
+        # print("cross ", np.cross(vec1, vec2))
+        if np.linalg.norm(np.cross(vec1, vec2)) <= 1e-5:
+            # If these are parallel vectors
+            # print("parallel")
+            vec2 = np.array(A) - np.array(C)
+            pass
+        
+        # print("vec2 ", vec2)
+        # print("cross ", np.cross(vec1, vec2))
+        if np.linalg.norm(np.cross(vec1, vec2)) <= 1e-5:
+            # print("parallel")
+            vec2 = np.array(B) - np.array(C)
+            pass
+        
+        # print("vec2 ", vec2)
+        # print("cross ", np.cross(vec1, vec2))
+        if np.linalg.norm(np.cross(vec1, vec2)) <= 1e-5:
+            print("non-parallel vectors not found")
+            exit(1)
+            pass
+
+        print("corners of plane ", corners)
+        print("vec1 ", vec1)
+        print("vec2 ", vec2)
+
+        normal = np.cross(vec1, vec2)
+        # print("normal ", normal)
+        normal /= np.linalg.norm(normal)
+        print("normal to the plane ", normal)
+        return normal
+    
+    def find_angle_between_planes_v2(self, miller1, miller2, points_dict):
+        """
+        plane1 : labels of a plane corners
+        plane2 : labels of a plane corners
+        """
+        n1_hat = self.find_normal_vector_v2(miller1)
+        n2_hat = self.find_normal_vector_v3(miller2, points_dict)
+        
+        angle = np.rad2deg(np.arccos(np.dot(n1_hat, n2_hat)))
+        thestr = "Angle between planes {} and {} is {:.3f} degree ".format(miller1, miller2, angle)
+        
+        if angle > 90:
+            thestr += " Or {:.3f} degree ".format(180-angle)
+            pass
+        print(thestr)
+        
+        pass
+
     def find_angle_between_planes(self, miller1, miller2):
         """
         plane1 : labels of a plane corners
@@ -544,6 +631,7 @@ if __name__ == "__main__":
     thecell = UnitCell(length_params[0], length_params[1], length_params[2],
                        np.radians(angle_params[0]), np.radians(angle_params[1]), np.radians(angle_params[2])
                        )
+    thecell.set_cubic_reference(args.c)
     thecell.draw()
     thecell.draw_plane_calculate_angle(plane1, plane2)
     thecell.show()
