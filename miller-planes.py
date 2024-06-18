@@ -406,6 +406,7 @@ class UnitCell:
         Z = arr[:,:,2]
         ax.plot_surface(X, Y, Z,  edgecolor='green', rstride=1, cstride=1, alpha=opacity)
 
+        # ax.plot_surface(X, Y, Z,  edgecolor='green', rstride=1, cstride=1, alpha=opacity, facecolors = 'green')
         pass
 
     def draw_plane_from_3_points(self, A, B, C, opacity=0.3):
