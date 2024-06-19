@@ -247,10 +247,15 @@ class UnitCell:
         corners1 = self.find_corner_order(corners1, points_dict1)
         corners2 = self.find_corner_order(corners2, points_dict2)
         
-        self.find_angle_between_planes_v2(miller1, miller2, points_dict2)
+        n1hat, n2hat = self.find_angle_between_planes_v2(miller1, miller2, points_dict2)
 
         self.draw_plane_from_4_points_v2(corners1, points_dict1, opacity=0.8)
         self.draw_plane_from_4_points_v2(corners2, points_dict2, opacity=0.8)
+
+        n1hat *= 5
+        n2hat *= 5
+        self.ax.quiver(0,0,0, n1hat[0], n1hat[1], n1hat[2], color=['r'])
+        self.ax.quiver(0,0,0, n2hat[0], n2hat[1], n2hat[2], color=['g'])
         pass
 
     def find_corner_order(self, corners1, points_dict):
@@ -542,6 +547,8 @@ class UnitCell:
             thestr += " Or {:.3f} degree ".format(180-angle)
             pass
         print(thestr)
+
+        return n1_hat, n2_hat
         
         pass
 
