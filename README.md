@@ -16,6 +16,12 @@ for thin film
 1. Install Anaconda/conda 
 2. Install pandas, matplotlib, scipy, sympy, jupyter
 
+# Installation on Fedora (Using Terminal)
+$ sudo dnf install conda
+$ conda create -n xrd python=3.10
+$ conda activate xrd
+$ conda install pandas numpy matplotlib scipy seaborn jupyter sympy
+
 
 # Explaining Algorithm behind miller-planes.py
 1. Lattice parameters are a,b,c, alpha,beta,gamma
