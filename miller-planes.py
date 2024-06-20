@@ -251,9 +251,9 @@ class UnitCell:
 
         self.draw_plane_from_4_points_v2(corners1, points_dict1, opacity=0.8)
         self.draw_plane_from_4_points_v2(corners2, points_dict2, opacity=0.8)
-
-        n1hat *= 5
-        n2hat *= 5
+        scale = np.max([self.a, self.b, self.c])
+        n1hat *= scale
+        n2hat *= scale
         self.ax.quiver(0,0,0, n1hat[0], n1hat[1], n1hat[2], color=['r'])
         self.ax.quiver(0,0,0, n2hat[0], n2hat[1], n2hat[2], color=['g'])
         pass
