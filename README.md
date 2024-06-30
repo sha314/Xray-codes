@@ -18,8 +18,11 @@ for thin film
 
 # Installation on Fedora (Using Terminal)
 $ sudo dnf install conda
+
 $ conda create -n xrd python=3.10
+
 $ conda activate xrd
+
 $ conda install pandas numpy matplotlib scipy seaborn jupyter sympy
 
 
