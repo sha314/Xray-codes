@@ -57,3 +57,15 @@ Creates the following plot
 The following command shows help in terminal 
 
 $ python miller-planes.py -h
+
+## input file for miller-planes.py
+
+Let's say you have the following line in `miller.input.txt` file
+```
+-a 15.06,3.7,9.72 -A 90,111.45,90 -i1 0,0,1 -i2 2,0,-1
+```
+
+And if you run the following command, then program will read the line as input and compute angles
+```
+python miller-planes.py --in miller.input.txt
+```

@@ -26,6 +26,9 @@ parser.add_argument('-i2', metavar='index2', type=str,
 parser.add_argument('-c',
                     help="If provided, then the i2 miller index is considered for a cubic unit cell. it's a flag, no argument is requred", action='store_true')
 
+parser.add_argument('--in', dest="input_file", metavar='input_file', type=str,
+                    help="If provided then it must be followed by an plain text input file where each line will contain instructions to compute angle between planes")
+
 
 args = parser.parse_args()
 print(args)
@@ -38,6 +41,8 @@ print(args.c)
 # print(angle_params)
 # print(plane1)
 # print(plane2)
+# print(args.in)
+# print(args.input_file)
 
 
 
@@ -635,14 +640,46 @@ if __name__ == "__main__":
     # print(angle_params)
     # print(plane1)
     # print(plane2)
+    if args.input_file is not None:
+        import shlex
+        print("Reading inputs from file ", args.input_file)
+        with open(args.input_file) as f:
+            for i, line in enumerate(f, 1):
+                print("###################################")
+                line = line.strip()
+                if not line or line.startswith("#"):
+                    continue  # skip empty lines or comments
 
-    thecell = UnitCell(length_params[0], length_params[1], length_params[2],
-                       np.radians(angle_params[0]), np.radians(angle_params[1]), np.radians(angle_params[2])
-                       )
-    thecell.set_cubic_reference(args.c)
-    thecell.draw()
-    thecell.draw_plane_calculate_angle(plane1, plane2)
-    thecell.show()
+                try:
+                    args_line = parser.parse_args(shlex.split(line))
+                    print(args_line)
+                    length_params = [float(i) for i in args_line.a.split(',')]
+                    angle_params = [float(i) for i in args_line.A.split(',')]
+                    plane1 = [int(i) for i in args_line.i1.split(',')]
+                    plane2 = [int(i) for i in args_line.i2.split(',')]
+                    print(args_line.c)
+                    thecell = UnitCell(length_params[0], length_params[1], length_params[2],
+                        np.radians(angle_params[0]), np.radians(angle_params[1]), np.radians(angle_params[2])
+                        )
+                    thecell.set_cubic_reference(args.c)
+                    thecell.draw()
+                    thecell.draw_plane_calculate_angle(plane1, plane2)
+                    thecell.show()
+
+                except SystemExit:
+                    print(f"Line {i}: invalid arguments -> {line}")
+
+
+                pass
+
+    else:
+        thecell = UnitCell(length_params[0], length_params[1], length_params[2],
+                        np.radians(angle_params[0]), np.radians(angle_params[1]), np.radians(angle_params[2])
+                        )
+        thecell.set_cubic_reference(args.c)
+        thecell.draw()
+        thecell.draw_plane_calculate_angle(plane1, plane2)
+        thecell.show()
 
     # testing()
     pass
